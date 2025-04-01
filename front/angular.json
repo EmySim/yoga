@@ -18,7 +18,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/yoga",
             "index": "src/index.html",
@@ -65,15 +65,6 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
-            },
-            "e2e": {
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true,
-              "vendorChunk": true,
-              "customWebpackConfig": {
-                "path": "./cypress/coverage.webpack.ts"
-              }
             }
           },
           "defaultConfiguration": "production"
@@ -81,8 +72,7 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "project-name:build",
-            "proxyConfig": "src/proxy.config.json"
+            "browserTarget": "yoga:build"
           },
           "configurations": {
             "production": {
@@ -94,12 +84,6 @@
           },
           "defaultConfiguration": "development"
         },
-        "serve-coverage": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
-          "options": {
-            "browserTarget": "yoga:build:e2e"
-          }
-        },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
@@ -109,60 +93,8 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "tsConfig": "tsconfig.spec.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": []
-          }
-        },
-        "cypress-run": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "yoga:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "yoga:serve:production"
-            }
-          }
-        },
-        "cypress-open": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "watch": true,
-            "headless": false
-          }
-        },
-        "e2e": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "devServerTarget": "yoga:serve-coverage",
-            "watch": true,
-            "headless": false
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "yoga:serve-coverage:production"
-            }
-          }
-        },
-        "e2e-ci": {
-          "builder": "@cypress/schematic:cypress",
-          "options": {
-            "browser": "chrome",
-            "devServerTarget": "yoga:serve-coverage",
-            "headless": true,
-            "watch": false
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "yoga:serve-coverage:production"
-            }
+            "jestConfig": "jest.config.js",
+            "tsConfig": "tsconfig.spec.json"
           }
         }
       }
