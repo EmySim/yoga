@@ -2,12 +2,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "module": "ESNext",  // Utilisation d'ESNext pour une meilleure prise en charge des modules ECMAScript
-    "moduleResolution": "NodeNext",
     "types": [
-      "jest",
-      "node"
+      "jest"
     ],
+    "module": "commonjs",
     "emitDecoratorMetadata": true,
     "allowJs": true
   },
@@ -16,7 +14,6 @@
   ],
   "include": [
     "src/**/*.spec.ts",
-    "src/**/*.d.ts",
-    "src/**/*.ts"  // Ajoute tous les fichiers .ts pour un traitement complet
+    "src/**/*.d.ts"
   ]
 }

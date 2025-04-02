@@ -1,3 +1,4 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -15,32 +16,18 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "isolatedModules": true, // ✅ Recommandé pour les projets Angular
-    "esModuleInterop": true,
-    "types": ["jest", "node"], // ✅ Types nécessaires pour Jest et Node.js
-    "typeRoots": ["node_modules/@types"],
-    "skipLibCheck": true, // ✅ Évite les erreurs dans node_modules
-    "paths": {
-      "@angular/*": ["node_modules/@angular/*"], // ✅ Résolution des imports Angular
-      "@angular/material/*": ["node_modules/@angular/material/*"],
-      "src/*": ["src/*"] // ✅ Alias pour les imports relatifs à src
-    },
     "target": "es2020",
     "module": "es2020",
-    "lib": ["es2020", "dom"]
+    "lib": [
+      "es2020",
+      "dom"
+    ]
   },
-  "files": [
-   
-    "src/polyfills.ts"
-  ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "exclude": [
-    "cypress", // ✅ Exclusion des tests E2E Cypress
-    "node_modules" // ✅ Exclusion des dépendances
-  ]
+  "exclude": ["cypress"]
 }

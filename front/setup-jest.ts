@@ -1,7 +1,6 @@
 import 'jest-preset-angular/setup-jest';
-import '@testing-library/jest-dom';
 
-// mock localStorage et sessionStorage si nécessaire
+/* global mocks for jsdom */
 const mock = () => {
   let storage: { [key: string]: string } = {};
   return {
@@ -26,3 +25,6 @@ Object.defineProperty(document.body.style, 'transform', {
     };
   },
 });
+
+/* output shorter and more meaningful Zone error stack traces */
+// Error.stackTraceLimit = 2;
