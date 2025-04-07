@@ -1,5 +1,6 @@
-package com.openclassrooms.starterjwt.models;
+package com.openclassrooms.starterjwt.modelstest;
 
+import com.openclassrooms.starterjwt.models.User;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

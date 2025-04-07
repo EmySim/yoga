@@ -1,10 +1,10 @@
-package com.openclassrooms.starterjwt.models;
+package com.openclassrooms.starterjwt.modelstest;
 
+import com.openclassrooms.starterjwt.models.Teacher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDateTime;
