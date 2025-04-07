@@ -4,7 +4,8 @@
     "outDir": "./out-tsc/spec",
     "types": [
       "jest",
-      "@testing-library/jest-dom/extend-expect"
+      "@testing-library/jest-dom/extend-expect",
+      "node"
     ],
     "module": "commonjs",
     "emitDecoratorMetadata": true,

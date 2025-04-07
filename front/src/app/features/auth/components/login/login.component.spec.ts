@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { expect } from '@jest/globals';
-import { SessionService } from 'src/app/services/session.service';
+import { SessionService } from '../../../../services/session.service';
 
 import { LoginComponent } from './login.component';
 
