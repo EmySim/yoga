@@ -193,7 +193,7 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>**/dto/*</exclude>
+                                <exclude>com/openclassrooms/starterjwt/dto/*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
