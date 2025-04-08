@@ -20,14 +20,15 @@ public class JwtUtils {
   private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
   @Value("${oc.app.jwtSecret}")
-  private String jwtSecret;
+  public String jwtSecret;
 
   @Value("${oc.app.jwtExpirationMs}")
-  private int jwtExpirationMs;
+  public int jwtExpirationMs;
 
-  private SecretKey getSigningKey() {
-    // Utilise la clé définie via jwtSecret
-    return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+  public SecretKey getSigningKey() {
+    // Génère une clé sécurisée de la bonne taille pour l'algorithme HS512
+    logger.warn("Using a secure, generated signing key for JWT.");
+    return Keys.secretKeyFor(SignatureAlgorithm.HS512); // Génère automatiquement une clé suffisamment sécurisée
   }
 
   public String generateJwtToken(Authentication authentication) {

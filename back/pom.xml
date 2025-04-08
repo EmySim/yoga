@@ -154,9 +154,16 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
                 <version>3.2.5</version>
-
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-only</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -202,6 +209,7 @@
                         <configuration>
                             <excludes>
                                 <exclude>com/openclassrooms/starterjwt/dto/**</exclude>
+                                <exclude>com/openclassrooms/starterjwt/SpringBootSecurityJwtApplication</exclude>
                             </excludes>
                         </configuration>
                     </execution>
