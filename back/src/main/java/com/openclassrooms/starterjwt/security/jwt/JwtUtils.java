@@ -26,9 +26,8 @@ public class JwtUtils {
   private int jwtExpirationMs;
 
   private SecretKey getSigningKey() {
-    // Génère une clé sécurisée de la bonne taille pour l'algorithme HS512
-    logger.warn("Using a secure, generated signing key for JWT.");
-    return Keys.secretKeyFor(SignatureAlgorithm.HS512); // Génère automatiquement une clé suffisamment sécurisée
+    // Utilise la clé définie via jwtSecret
+    return Keys.hmacShaKeyFor(jwtSecret.getBytes());
   }
 
   public String generateJwtToken(Authentication authentication) {
