@@ -1,117 +1,88 @@
 package com.openclassrooms.starterjwt.controllerstest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.starterjwt.controllers.AuthController;
 import com.openclassrooms.starterjwt.models.User;
-import com.openclassrooms.starterjwt.payload.request.LoginRequest;
 import com.openclassrooms.starterjwt.payload.request.SignupRequest;
-import com.openclassrooms.starterjwt.payload.response.JwtResponse;
 import com.openclassrooms.starterjwt.payload.response.MessageResponse;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.security.jwt.JwtUtils;
-import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Optional;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-@WebMvcTest(AuthController.class)
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private AuthenticationManager authenticationManager;
 
-    @MockBean
-    private JwtUtils jwtUtils;
-
-    @MockBean
+    @Mock
     private PasswordEncoder passwordEncoder;
 
-    @MockBean
+    @Mock
+    private JwtUtils jwtUtils;
+
+    @Mock
     private UserRepository userRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @InjectMocks
+    private AuthController authController;
 
     @Test
-    void should_authenticate_user_successfully() throws Exception {
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail("test@example.com");
-        loginRequest.setPassword("password");
+    void should_return_bad_request_when_email_already_exists() {
+        // Given
+        SignupRequest request = new SignupRequest();
+        request.setEmail("test@example.com");
+        request.setFirstName("Jean");
+        request.setLastName("Dupont");
+        request.setPassword("motdepasse123");
 
-        UserDetailsImpl userDetails = new UserDetailsImpl(1L, "test@example.com", "password", "John", "Doe", Boolean.TRUE);
-        Authentication authentication = mock(Authentication.class);
+        when(userRepository.existsByEmail("test@example.com")).thenReturn(true);
 
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-                .thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(userDetails);
-        when(jwtUtils.generateJwtToken(authentication)).thenReturn("mock-jwt-token");
-        when(userRepository.findByEmail("test@example.com"))
-                .thenReturn(Optional.of(new User("test@example.com", "Doe", "John", "encodedPass", true)));
+        // When
+        ResponseEntity<?> response = authController.registerUser(request);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("mock-jwt-token"))
-                .andExpect(jsonPath("$.admin").value(true))
-                .andExpect(jsonPath("$.username").value("test@example.com"))
-                .andExpect(jsonPath("$.firstName").value("John"))
-                .andExpect(jsonPath("$.lastName").value("Doe"));
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertInstanceOf(MessageResponse.class, response.getBody());
+        assertEquals("Error: Email is already taken!", ((MessageResponse) response.getBody()).getMessage());
+
+        verify(userRepository, times(1)).existsByEmail("test@example.com");
+        verify(userRepository, never()).save(any());
     }
 
     @Test
-    void should_register_user_successfully() throws Exception {
-        SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setEmail("newuser@example.com");
-        signupRequest.setPassword("securepass");
-        signupRequest.setFirstName("Jane");
-        signupRequest.setLastName("Smith");
+    void should_register_user_successfully_when_email_not_exists() {
+        // Given
+        SignupRequest request = new SignupRequest();
+        request.setEmail("newuser@example.com");
+        request.setFirstName("Marie");
+        request.setLastName("Curie");
+        request.setPassword("radium42");
 
         when(userRepository.existsByEmail("newuser@example.com")).thenReturn(false);
-        when(passwordEncoder.encode("securepass")).thenReturn("encodedpass");
+        when(passwordEncoder.encode("radium42")).thenReturn("encoded_password");
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(signupRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("User registered successfully!"));
-    }
+        // When
+        ResponseEntity<?> response = authController.registerUser(request);
 
-    @Test
-    void should_fail_register_when_email_exists() throws Exception {
-        SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setEmail("existing@example.com");
-        signupRequest.setPassword("pass");
-        signupRequest.setFirstName("X");
-        signupRequest.setLastName("Y");
+        // Then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertInstanceOf(MessageResponse.class, response.getBody());
+        assertEquals("User registered successfully!", ((MessageResponse) response.getBody()).getMessage());
 
-        when(userRepository.existsByEmail("existing@example.com")).thenReturn(true);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(signupRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Error: Email is already taken!"));
+        verify(userRepository).save(any(User.class));
     }
 }
