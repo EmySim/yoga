@@ -107,8 +107,9 @@
           }
         },
         "test": {
-          "builder": "@angular-builders/jest:run",
+          "builder": "@angular-devkit/build-angular:jest",
           "options": {
+            
             "tsConfig": "tsconfig.spec.json",
             "assets": [
               "src/favicon.ico",

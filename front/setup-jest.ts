@@ -1,4 +1,5 @@
 import 'jest-preset-angular/setup-jest';
+import '@testing-library/jest-dom';
 
 /* global mocks for jsdom */
 const mock = () => {
@@ -18,12 +19,10 @@ Object.defineProperty(window, 'getComputedStyle', {
 });
 
 Object.defineProperty(document.body.style, 'transform', {
-  value: () => {
-    return {
-      enumerable: true,
-      configurable: true,
-    };
-  },
+  value: () => ({
+    enumerable: true,
+    configurable: true,
+  }),
 });
 
 /* output shorter and more meaningful Zone error stack traces */
