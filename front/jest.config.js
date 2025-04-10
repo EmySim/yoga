@@ -4,11 +4,12 @@ module.exports = {
   },
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: [
-    '<rootDir>/setup-jest.ts',   
+    '<rootDir>/setup-jest.ts',
+    '<rootDir>/src/jest.setup.ts',  // Ajout de cette ligne pour configurer le nouveau fichier setup
   ],
   bail: false,
   verbose: false,
-  testEnvironment: "jsdom",
+  testEnvironment: 'jsdom',
   
   // Collecte de la couverture
   collectCoverage: true,
