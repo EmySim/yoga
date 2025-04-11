@@ -11,13 +11,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgZone } from '@angular/core';
 import '@testing-library/jest-dom';
 
 describe('LoginComponent Integration Test (avec mocks)', () => {
   const mockLoginSuccess = jest.fn();
   const mockLoginFail = jest.fn();
   const mockSessionService = { logIn: jest.fn() };
-  const mockRouter = { navigate: jest.fn() };
+  let mockRouter = { navigate: jest.fn() };
+  let ngZone: NgZone;
 
   const setup = async (loginReturnValue: any) => {
     await render(LoginComponent, {
@@ -45,6 +47,8 @@ describe('LoginComponent Integration Test (avec mocks)', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockRouter = { navigate: jest.fn() };
+    ngZone = new NgZone({ enableLongStackTrace: false });
   });
 
   it('doit afficher le formulaire de login', async () => {
