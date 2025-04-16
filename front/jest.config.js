@@ -8,44 +8,35 @@ module.exports = {
   ],
   bail: false,
   verbose: false,
-  testEnvironment: 'jsdom',
-  
-  // Collecte de la couverture
+  testEnvironment: "jsdom",
+
+  // Collect coverage
   collectCoverage: true,
   coverageDirectory: './coverage/jest',
-  coverageReporters: ['html', 'lcov', 'text-summary'],  // Formats de rapport
-  
-  // Fichiers à ignorer pour la couverture
+  coverageReporters: ['html', 'lcov', 'text-summary'],
+
+  // Files to ignore for coverage
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   coveragePathIgnorePatterns: ['<rootDir>/node_modules/'],
-  
-  // Inclusion des fichiers à couvrir (tests unitaires et tests d'intégration)
+
+  // Include files for coverage
   collectCoverageFrom: [
-    "src/app/**/*.ts", // Inclut tous les fichiers TypeScript dans `src/app`
-    "!src/app/**/*.spec.ts", // Exclut les fichiers de test unitaires
-    "!src/app/**/*.module.ts", // Exclut les fichiers de module Angular
-    "!src/app/**/index.ts", // Exclut les fichiers d'index
-    "!src/app/**/*.d.ts", // Exclut les fichiers de définition TypeScript
-    "src/integration-tests/**/*.ts" // Inclut les fichiers dans `integration-tests`
+    'src/app/**/*.ts', // Include all application files
+    '!src/app/**/*.spec.ts', // Exclude test files
+    'src/integration-tests/**/*.ts', // Include integration test files
   ],
 
-  // Gérer les tests d'intégration et unitaires
-  testMatch: [
-    "**/*.spec.ts", // Inclut les tests unitaires
-    "**/*.integration.spec.ts" // Inclut les tests d'intégration],
-  ],
-  
-  // Seuils de couverture
+  // Coverage thresholds
   coverageThreshold: {
     global: {
-      statements: 80,  // 80% de couverture globale
+      statements: 80, // 80% global coverage
     },
-    './src/integration-tests/': {  // 30% de couverture minimum pour les tests d'intégration
-      statements: 30,
+    './src/integration-tests/': { // Correct path for integration tests
+      statements: 30, // Minimum 30% coverage
     },
   },
-  
-  // Répertoires et modules
+
+  // Directories and modules
   roots: [
     "<rootDir>"
   ],
