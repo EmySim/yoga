@@ -113,3 +113,146 @@ describe('SessionService', () => {
     }, 100);
   });
 });
+describe('SessionService', () => {
+  let service: SessionService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(SessionService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  it('should initialize with isLogged as false', () => {
+    expect(service.isLogged).toBe(false);
+  });
+
+  it('should log in a user and update state', () => {
+    const mockUser: SessionInformation = {
+      token: 'some-token',
+      type: 'bearer',
+      id: 123,
+      username: 'john_doe',
+      firstName: 'John',
+      lastName: 'Doe',
+      admin: false
+    };
+
+    service.logIn(mockUser);
+
+    expect(service.sessionInformation).toEqual(mockUser);
+    expect(service.isLogged).toBe(true);
+  });
+
+  it('should log out a user and reset state', () => {
+    service.logOut();
+
+    expect(service.sessionInformation).toBeUndefined();
+    expect(service.isLogged).toBe(false);
+  });
+
+  it('should emit values correctly when logging in and out', (done) => {
+    const mockUser: SessionInformation = {
+      token: 'some-token',
+      type: 'bearer',
+      id: 123,
+      username: 'john_doe',
+      firstName: 'John',
+      lastName: 'Doe',
+      admin: false
+    };
+
+    const emittedValues: boolean[] = [];
+
+    service.$isLogged().subscribe(value => {
+      emittedValues.push(value);
+      if (emittedValues.length === 3) {
+        expect(emittedValues).toEqual([false, true, false]);
+        done();
+      }
+    });
+
+    service.logIn(mockUser);
+    service.logOut();
+  });
+
+  it('should not allow duplicate login without logout', () => {
+    const mockUser: SessionInformation = {
+      token: 'some-token',
+      type: 'bearer',
+      id: 123,
+      username: 'john_doe',
+      firstName: 'John',
+      lastName: 'Doe',
+      admin: false
+    };
+
+    service.logIn(mockUser);
+    service.logIn(mockUser);
+
+    expect(service.sessionInformation).toEqual(mockUser);
+    expect(service.isLogged).toBe(true);
+  });
+
+  it('should handle multiple state changes correctly', (done) => {
+    const mockUser: SessionInformation = {
+      token: 'some-token',
+      type: 'bearer',
+      id: 123,
+      username: 'john_doe',
+      firstName: 'John',
+      lastName: 'Doe',
+      admin: false
+    };
+
+    const emittedValues: boolean[] = [];
+
+    service.$isLogged().subscribe(value => {
+      emittedValues.push(value);
+      if (emittedValues.length === 5) {
+        expect(emittedValues).toEqual([false, true, false, true, false]);
+        done();
+      }
+    });
+
+    service.logIn(mockUser);
+    service.logOut();
+    service.logIn(mockUser);
+    service.logOut();
+  });
+
+  it('should handle undefined sessionInformation gracefully', () => {
+    service.logOut();
+
+    expect(service.sessionInformation).toBeUndefined();
+    expect(service.isLogged).toBe(false);
+  });
+
+  it('should emit correct values when toggling login state multiple times', (done) => {
+    const mockUser: SessionInformation = {
+      token: 'some-token',
+      type: 'bearer',
+      id: 123,
+      username: 'john_doe',
+      firstName: 'John',
+      lastName: 'Doe',
+      admin: false
+    };
+
+    const emittedValues: boolean[] = [];
+
+    service.$isLogged().subscribe(value => {
+      emittedValues.push(value);
+      if (emittedValues.length === 4) {
+        expect(emittedValues).toEqual([false, true, false, true]);
+        done();
+      }
+    });
+
+    service.logIn(mockUser);
+    service.logOut();
+    service.logIn(mockUser);
+  });
+});
