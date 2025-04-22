@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.mappertest;
 
+import com.openclassrooms.starterjwt.SpringBootSecurityJwtApplication;
 import com.openclassrooms.starterjwt.dto.SessionDto;
 import com.openclassrooms.starterjwt.mapper.SessionMapper;
 import com.openclassrooms.starterjwt.models.Session;
@@ -17,7 +18,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = SpringBootSecurityJwtApplication.class)
 class SessionMapperTest {
 
     @Autowired

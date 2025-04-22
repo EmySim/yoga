@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { AppModule } from './src/app/app.module';
-import { AppComponent } from './src/app/app.component';  // Import d'un composant pour tester le module
+import { AppModule } from './app/app.module';
+import { AppComponent } from './app/app.component';  // Import d'un composant pour tester le module
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'; // Pour tester sans animations
 import { expect } from '@jest/globals';

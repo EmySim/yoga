@@ -19,10 +19,15 @@ Object.defineProperty(window, 'getComputedStyle', {
 });
 
 Object.defineProperty(document.body.style, 'transform', {
-  value: () => ({
-    enumerable: true,
-    configurable: true,
-  }),
+  value: '',
+  writable: true,
+  configurable: true,
+});
+
+Object.defineProperty(HTMLElement.prototype, 'style', {
+  value: {
+    getPropertyValue: jest.fn(() => ''),
+  },
 });
 
 /* output shorter and more meaningful Zone error stack traces */

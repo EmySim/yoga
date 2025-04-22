@@ -1,25 +1,29 @@
-<div class="register" fxLayout="row" fxLayoutAlign="center center">
-    <mat-card>
+<div class="register" fxLayout="row" fxLayoutAlign="center center" data-testid="register-page">
+    <mat-card data-testid="register-card">
         <mat-card-header fxLayoutAlign="center center">
-            <mat-card-title>Register</mat-card-title>
+            <mat-card-title data-testid="register-title">Register</mat-card-title>
         </mat-card-header>
-        <form class="register-form" [formGroup]="form" (ngSubmit)="submit()">
+        <form class="register-form" [formGroup]="form" (ngSubmit)="submit()" data-testid="register-form">
             <mat-card-content fxLayout="column">
                 <mat-form-field fxFlex>
-                    <input matInput placeholder="First name" formControlName="firstName">
+                    <input matInput placeholder="First name" formControlName="firstName" data-testid="input-first-name">
                 </mat-form-field>
                 <mat-form-field fxFlex>
-                    <input matInput placeholder="Last name" formControlName="lastName">
+                    <input matInput placeholder="Last name" formControlName="lastName" data-testid="input-last-name">
                 </mat-form-field>
                 <mat-form-field fxFlex>
-                    <input matInput placeholder="Email" formControlName="email">
+                    <input matInput placeholder="Email" formControlName="email" data-testid="input-email">
                 </mat-form-field>
                 <mat-form-field fxFlex>
-                    <input matInput placeholder="Password" formControlName="password">
+                    <input matInput placeholder="Password" formControlName="password" data-testid="input-password">
                 </mat-form-field>
             </mat-card-content>
-            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Submit</button>
-            <span *ngIf="onError" class="error ml2">An error occurred</span>
+            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid" data-testid="submit-button">
+                Submit
+            </button>
+            <span *ngIf="onError" class="error ml2" data-testid="error-message">
+                An error occurred
+            </span>
         </form>
     </mat-card>
 </div>

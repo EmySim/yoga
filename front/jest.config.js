@@ -3,46 +3,38 @@ module.exports = {
     '@core/(.*)': '<rootDir>/src/app/core/$1',
   },
   preset: 'jest-preset-angular',
-  setupFilesAfterEnv: [
-    '<rootDir>/setup-jest.ts',   
-  ],
+  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   bail: false,
   verbose: false,
   testEnvironment: "jsdom",
-  
-  // Collecte de la couverture
+
+  // Couverture
   collectCoverage: true,
   coverageDirectory: './coverage/jest',
-  coverageReporters: ['html', 'lcov', 'text-summary'],  // Formats de rapport
-  
-  // Fichiers à ignorer pour la couverture
-  testPathIgnorePatterns: ['<rootDir>/node_modules/'],
-  coveragePathIgnorePatterns: ['<rootDir>/node_modules/'],
-  
-  // Inclusion des fichiers à couvrir (tests unitaires et tests d'intégration)
+  coverageReporters: ['html', 'lcov', 'text-summary'],
+
   collectCoverageFrom: [
-    'src/app/**/*.ts', // Couvre tous les fichiers TypeScript dans l'application
-    '!src/app/**/*.spec.ts', // Exclut les fichiers de test (spécifications)
+    "src/app/**/*.ts",        // Inclure tout le code métier
+    "!src/**/*.spec.ts",      // Exclure tous les tests
+    "!src/**/*.module.ts",    // Optionnel : on ignore les modules
+  ],
+  
+  coveragePathIgnorePatterns: [
+    '<rootDir>/node_modules/',
+    '<rootDir>/src/environments/'
   ],
 
-  // Seuils de couverture
   coverageThreshold: {
     global: {
-      statements: 80,  // 80% de couverture globale
+      statements: 80,
     },
-    './src/app/integration-tests/': {  // 30% de couverture minimum pour les tests d'intégration
+    './src/integration-tests/': {
       statements: 30,
     },
   },
-  
-  // Répertoires et modules
-  roots: [
-    "<rootDir>"
-  ],
-  modulePaths: [
-    "<rootDir>"
-  ],
-  moduleDirectories: [
-    "node_modules"
-  ],
+
+  // Chemins
+  roots: ["<rootDir>"],
+  modulePaths: ["<rootDir>"],
+  moduleDirectories: ["node_modules"]
 };
