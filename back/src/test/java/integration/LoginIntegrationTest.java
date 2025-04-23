@@ -24,7 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
         "spring.datasource.password=password",
         "spring.jpa.hibernate.ddl-auto=update",
         "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect",
-        "spring.jpa.show-sql=true"
+        "spring.jpa.show-sql=true",
+        "spring.security.oauth2.resourceserver.jwt.issuer-uri=",
+        "spring.security.oauth2.resourceserver.jwt.jwk-set-uri=",
+        "server.error.include-message=always"
 })
 class LoginIntegrationTest {
 
@@ -66,8 +69,9 @@ class LoginIntegrationTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getToken()).isNotEmpty();
-        assertThat(response.getBody().getToken()).startsWith("Bearer ");
+        String token = response.getBody().getToken();
+        assertThat(token).isNotEmpty();
+        assertThat(token.split("\\.")).hasSize(3); // Vérifie structure JWT
     }
 
     @Test
@@ -82,7 +86,7 @@ class LoginIntegrationTest {
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getBody()).contains("Bad credentials");  // Ou vérifie un message d'erreur spécifique
+        assertThat(response.getBody()).contains("Bad credentials");
     }
 
     @Test
@@ -98,6 +102,8 @@ class LoginIntegrationTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getToken()).startsWith("Bearer ");
+        String token = response.getBody().getToken();
+        assertThat(token).isNotEmpty();
+        assertThat(token.split("\\.")).hasSize(3); // Vérifie structure JWT
     }
 }
