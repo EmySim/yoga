@@ -14,4 +14,12 @@ To generate a test coverage report for the back-end using Jacoco, follow these s
 For launch and generate the jacoco code coverage:
 > mvn clean test
 
-GL
+
+Exécuter les tests unitaires
+mvn clean verify -Punit-tests
+Le rapport sera généré dans target/site/jacoco/index.html.
+
+Exécuter les tests d'intégration
+mvn clean verify -Pintegration-tests
+Le rapport sera également généré dans target/site/jacoco/index.html.
+
