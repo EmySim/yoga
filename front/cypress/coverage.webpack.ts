@@ -17,4 +17,7 @@ export default {
       },
     ],
   },
+  node: {
+    __dirname: true, // Active la prise en charge de __dirname
+  },
 };

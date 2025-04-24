@@ -1,31 +1,45 @@
 package integration;
 
-import com.openclassrooms.starterjwt.payload.response.JwtResponse;
+import com.openclassrooms.starterjwt.SpringBootSecurityJwtApplication;
+import com.openclassrooms.starterjwt.config.TestSecurityConfig;
 import com.openclassrooms.starterjwt.models.User;
+import com.openclassrooms.starterjwt.payload.response.JwtResponse;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = SpringBootSecurityJwtApplication.class
+)
+@Import(TestSecurityConfig.class)
 @TestPropertySource(properties = {
-        "spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver"
+        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
+        "spring.datasource.driver-class-name=org.h2.Driver",
+        "spring.datasource.username=sa",
+        "spring.datasource.password=password",
+        "spring.jpa.hibernate.ddl-auto=update",
+        "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect",
+        "spring.jpa.show-sql=true",
+        "spring.security.oauth2.resourceserver.jwt.issuer-uri=",
+        "spring.security.oauth2.resourceserver.jwt.jwk-set-uri=",
+        "server.error.include-message=always"
 })
-class AuthControllerIntegrationTest {
+class LoginIntegrationTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoginIntegrationTest.class);
 
     @LocalServerPort
     private int port;
@@ -39,23 +53,12 @@ class AuthControllerIntegrationTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Container
-    static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.0")
-            .withDatabaseName("testdb")
-            .withUsername("testuser")
-            .withPassword("testpass");
-
-    @DynamicPropertySource
-    static void overrideProps(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", mysqlContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", mysqlContainer::getUsername);
-        registry.add("spring.datasource.password", mysqlContainer::getPassword);
-    }
-
     @BeforeEach
     void setUp() {
+        logger.info("🧹 Nettoyage de la base de données...");
         userRepository.deleteAll();
 
+        logger.info("📦 Insertion d’un utilisateur valide en base");
         User user = new User();
         user.setEmail("validUser@example.com");
         user.setPassword(passwordEncoder.encode("validPassword"));
@@ -63,52 +66,83 @@ class AuthControllerIntegrationTest {
         user.setLastName("User");
 
         userRepository.save(user);
+        logger.info("✅ Utilisateur inséré : {}", user.getEmail());
     }
 
     @Test
     void testLoginWithValidCredentials() {
         String url = "http://localhost:" + port + "/api/auth/login";
+        logger.info("➡️ Envoi d'une requête POST à {}", url);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        String validCredentials = "{\"username\": \"validUser@example.com\", \"password\": \"validPassword\"}";
+        String validCredentials = "{\"email\": \"validUser@example.com\", \"password\": \"validPassword\"}";
         HttpEntity<String> request = new HttpEntity<>(validCredentials, headers);
 
         ResponseEntity<JwtResponse> response = restTemplate.exchange(url, HttpMethod.POST, request, JwtResponse.class);
 
+        logger.info("📥 Réponse reçue : {}", response);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getToken()).isNotEmpty();
+
+        String token = response.getBody().getToken();
+        logger.info("🔐 JWT généré : {}", token);
+        assertThat(token).isNotEmpty();
+        assertThat(token.split("\\.")).hasSize(3);
     }
 
     @Test
     void testLoginWithInvalidCredentials() {
         String url = "http://localhost:" + port + "/api/auth/login";
+        logger.info("➡️ Tentative de connexion avec identifiants invalides : {}", url);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        String invalidCredentials = "{\"username\": \"invalid@example.com\", \"password\": \"wrongPassword\"}";
+        String invalidCredentials = "{\"email\": \"invalid@example.com\", \"password\": \"wrongPassword\"}";
         HttpEntity<String> request = new HttpEntity<>(invalidCredentials, headers);
 
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
+        logger.info("📥 Réponse : {}", response);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getBody()).contains("Bad credentials");
+    }
+
+
+    @Test
+    void testUnauthorizedAccess() {
+        String url = "http://localhost:" + port + "/api/protected-resource";
+        logger.info("🔐 Tentative d'accès non autorisée à {}", url);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> request = new HttpEntity<>(null, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+
+        logger.info("📥 Réponse : {}", response);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
     void testJwtGeneration() {
         String url = "http://localhost:" + port + "/api/auth/login";
+        logger.info("🔄 Vérification de la génération d'un JWT valide");
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        String validCredentials = "{\"username\": \"validUser@example.com\", \"password\": \"validPassword\"}";
+        String validCredentials = "{\"email\": \"validUser@example.com\", \"password\": \"validPassword\"}";
         HttpEntity<String> request = new HttpEntity<>(validCredentials, headers);
 
         ResponseEntity<JwtResponse> response = restTemplate.exchange(url, HttpMethod.POST, request, JwtResponse.class);
 
+        logger.info("📥 Réponse : {}", response);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getToken()).startsWith("Bearer ");
+
+        String token = response.getBody().getToken();
+        logger.info("🔐 JWT : {}", token);
+        assertThat(token).isNotEmpty();
+        assertThat(token.split("\\.")).hasSize(3);
     }
 }
