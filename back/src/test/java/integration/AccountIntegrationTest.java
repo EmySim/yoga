@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -44,12 +45,11 @@ import static org.assertj.core.api.Assertions.assertThat;
         "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect",
         "spring.jpa.show-sql=true",
         "server.error.include-message=always",
-        "oc.app.jwtSecret=openclassroomsopenclassroomsopenclassrooms"
+        "oc.app.jwtSecret=sddzYXEFXiMHkhgGH91N9DoSix780dQh8xyRlYdV_SUAGGvos1Lm_ess3tE8OBQxZr71cwn1bcefdcLtDbREHw=="
 })
 public class AccountIntegrationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AccountIntegrationTest.class);
-    private static final String JWT_SECRET = "openclassroomsopenclassroomsopenclassrooms";
 
     @LocalServerPort
     private int port;
@@ -62,6 +62,9 @@ public class AccountIntegrationTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Value("${oc.app.jwtSecret}")
+    private String jwtSecret;
 
     private String jwtToken;
 
@@ -84,12 +87,12 @@ public class AccountIntegrationTest {
     }
 
     private String generateJwtToken(String email) {
-        SecretKey key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes(StandardCharsets.UTF_8));
+        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         return "Bearer " + Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 24h
-                .signWith(key, SignatureAlgorithm.HS512) // Correspond à JwtUtils
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -102,7 +105,6 @@ public class AccountIntegrationTest {
         headers.set(HttpHeaders.AUTHORIZATION, jwtToken);
 
         HttpEntity<Void> request = new HttpEntity<>(headers);
-
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -124,7 +126,20 @@ public class AccountIntegrationTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<Void> request = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void shouldReturnUnauthorizedWithInvalidToken() {
+        String url = "http://localhost:" + port + "/api/user/me";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer invalid.token.here");
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
