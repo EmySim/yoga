@@ -1,5 +1,7 @@
 package com.openclassrooms.starterjwt.security.jwt;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -26,10 +28,10 @@ public class JwtUtils {
   public int jwtExpirationMs;
 
   public SecretKey getSigningKey() {
-    // Génère une clé sécurisée de la bonne taille pour l'algorithme HS512
-    logger.warn("Using a secure, generated signing key for JWT.");
-    return Keys.secretKeyFor(SignatureAlgorithm.HS512); // Génère automatiquement une clé suffisamment sécurisée
+    byte[] keyBytes = Base64.getDecoder().decode(jwtSecret);
+    return Keys.hmacShaKeyFor(keyBytes);
   }
+
 
   public String generateJwtToken(Authentication authentication) {
     UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
