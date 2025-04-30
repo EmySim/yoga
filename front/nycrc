@@ -9,5 +9,6 @@
     "./src/main.ts",
     "./src/test.ts",
     "**/*.conf.js"
-  ]
+  ],
+  "reporter": ["html", "lcov", "text-summary"]
 }
