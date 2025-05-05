@@ -1,16 +1,17 @@
 package com.openclassrooms.starterjwt.config;
 
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
+@Profile("test")
 @TestConfiguration
 public class TestRestTemplateConfig {
 
     @Bean
     public TestRestTemplate testRestTemplate() {
-        TestRestTemplate restTemplate = new TestRestTemplate();
-        // Supprime le gestionnaire d'erreurs personnalisé
-        return restTemplate;
+        // Template REST pour tests sans gestion d'erreurs personnalisée
+        return new TestRestTemplate();
     }
 }

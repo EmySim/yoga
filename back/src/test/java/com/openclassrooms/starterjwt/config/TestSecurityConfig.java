@@ -5,10 +5,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import static org.springframework.security.config.Customizer.withDefaults;
 
+
+@Profile("test")
 @TestConfiguration
 public class TestSecurityConfig {
 
@@ -17,25 +23,27 @@ public class TestSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         logger.info("🔒 Chargement de la configuration de sécurité pour les tests...");
+
         http
-                .csrf(csrf -> {
-                    logger.info("❌ Désactivation de CSRF pour les tests");
-                    csrf.disable();
-                })
-                .authorizeHttpRequests(auth -> {
-                    logger.info("✅ Autorisation des requêtes sur /api/auth/**, protection du reste");
-                    auth
-                            .requestMatchers("/api/auth/**").permitAll()
-                            .anyRequest().authenticated();
-                })
-                .exceptionHandling(ex -> ex.authenticationEntryPoint((request, response, authException) -> {
-                    logger.info("⛔ Requête non autorisée interceptée, retour du statut 401 UNAUTHORIZED");
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, excep) -> {
+                    logger.info("⛔ Requête non autorisée interceptée, retour du statut 401");
+                    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                 }))
-                .sessionManagement(session -> {
-                    logger.info("🛑 Politique de session : STATELESS");
-                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-                });
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers.addHeaderWriter(
+                        new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)
+                ))
+                .httpBasic(httpBasic -> httpBasic.disable()) // Désactivation explicite de HTTP Basic
+                .formLogin(withDefaults());         // désactive form login sans dépréciation
+
         return http.build();
     }
+
+
 }

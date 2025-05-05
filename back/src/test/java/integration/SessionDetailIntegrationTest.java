@@ -2,7 +2,6 @@ package integration;
 
 import com.jayway.jsonpath.JsonPath;
 import com.openclassrooms.starterjwt.SpringBootSecurityJwtApplication;
-import com.openclassrooms.starterjwt.dto.SessionDto;
 import com.openclassrooms.starterjwt.repository.SessionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -13,12 +12,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles("test")
 @Tag("integration")
 @SpringBootTest(classes = SpringBootSecurityJwtApplication.class)
 @AutoConfigureMockMvc
@@ -38,16 +40,21 @@ public class SessionDetailIntegrationTest {
 
     @Test
     public void adminShouldCreateAndRetrieveSessionDetails() throws Exception {
+        // Date future formatée correctement
+        String futureDate = LocalDateTime.now().plusDays(1)
+                .withHour(10).withMinute(0).withSecond(0)
+                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
         // Étape 1 : Création d'une session
-        String sessionJson = """
-                    {
-                        "name": "Yoga Avancé",
-                        "date": "2025-05-01T10:00:00",
-                        "description": "Session avancée pour les experts",
-                        "teacher_id": 1,
-                        "users": []
-                    }
-                """;
+        String sessionJson = String.format("""
+            {
+                "name": "Yoga Avancé",
+                "date": "%s",
+                "description": "Session avancée pour les experts",
+                "teacher_id": 1,
+                "users": []
+            }
+        """, futureDate);
 
         String response = mockMvc.perform(post("/api/session")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +66,7 @@ public class SessionDetailIntegrationTest {
                 .getResponse()
                 .getContentAsString();
 
-        // Récupérer l'ID de la session créée
+        // Récupération de l'ID
         Integer id = JsonPath.read(response, "$.id");
         Long sessionId = id.longValue();
 
