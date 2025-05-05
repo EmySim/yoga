@@ -1,129 +1,133 @@
+
 # 🧘 Yoga App - Backend
 
-Ce projet est le backend d'une application de gestion de séances de yoga, développé avec **Spring Boot**, **JWT**, **JPA/Hibernate**, et testé avec **JUnit 5**, **Mockito**, **Testcontainers** et **JaCoCo**.
+**The best backend for a Yoga app!**  
+Une application Spring Boot moderne pour gérer les cours, les utilisateurs, et l’authentification dans une application de yoga.
 
 ---
 
-## 🚀 Fonctionnalités principales
+## 🚀 Fonctionnalités
 
-- Authentification sécurisée avec JWT
-- Gestion des comptes utilisateurs (admin et user)
-- CRUD sur les séances de yoga
-- Système de rôles pour l’accès aux fonctionnalités
-- Couverture de test unitaires et d’intégration séparées
-
----
-
-## 🛠️ Technologies
-
-- Java 17
-- Spring Boot 3.1
-- Spring Security
-- JPA (Hibernate)
-- MySQL / H2 (runtime/test)
-- JWT (jjwt)
-- MapStruct
-- Lombok
-- Maven
-- Testcontainers
-- JUnit 5
-- Mockito
-- JaCoCo
+- API REST sécurisée avec Spring Security & JWT
+- Gestion des utilisateurs, des rôles et des cours
+- Base de données relationnelle (MySQL ou H2 pour les tests)
+- Validation des données avec Hibernate Validator
+- Tests unitaires et d'intégration avec JaCoCo, Surefire & Failsafe
+- Génération de rapports de couverture de code
+- Utilisation de Lombok & MapStruct pour simplifier le code
 
 ---
 
-## 🔧 Configuration
+## ⚙️ Prérequis
 
-### Base de données
-
-Configurer votre base MySQL dans `application.properties` :
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/yoga_db
-spring.datasource.username=root
-spring.datasource.password=secret
-```
+- Java 17+
+- Maven 3.8+
+- MySQL (pour l’environnement de prod/dev)
 
 ---
 
-## 📦 Construction
-
-### Compiler le projet
+## 🛠️ Installation
 
 ```bash
+# Clone du projet
+git clone https://github.com/EmySim/yoga.git
+cd yoga-app
+
+# Compilation et tests
 mvn clean install
 ```
 
 ---
 
-## ✅ Tests
+## 🗃️ Configuration de la base de données
 
-### Lancer tous les tests (unitaires + intégration)
+Modifie le fichier `application.properties` ou `application.yml` pour configurer l'accès à ta base de données MySQL :
 
-```bash
-mvn clean verify
-```
-```bash
-mvn jacoco:merge jacoco:report
-```
-### Lancer uniquement les tests **unitaires**
-
-```bash
-mvn clean verify -Punit-tests
-```
-
-➡️ Rapport JaCoCo : `target/jacoco-unit/index.html`
-
-### Lancer uniquement les tests **d'intégration**
-
-```bash
-mvn clean verify -Pintegration-tests
-```
-
-➡️ Rapport JaCoCo : `target/jacoco-integration/index.html`
-
-### Convention de nommage
-
-| Type de test         | Nom de classe attendu        | Plugin Maven utilisé     |
-|----------------------|------------------------------|--------------------------|
-| Test unitaire        | `*Test.java`                 | `maven-surefire-plugin`  |
-| Test d'intégration   | `*IT.java`                   | `maven-failsafe-plugin`  |
-
----
-
-## 📊 Couverture de test
-
-Le projet utilise **JaCoCo** pour mesurer la couverture de code.
-
-- Les rapports sont générés automatiquement avec les profils Maven.
-- Les exclusions sont configurées dans le `pom.xml` (ex : `dto/**` ou classes de démarrage).
-
----
-
-## 📂 Structure du projet
-
-```
-src/
-├── main/
-│   ├── java/com/openclassrooms/starterjwt/
-│   └── resources/
-├── test/
-│   ├── java/com/openclassrooms/starterjwt/
-│       ├── SomeServiceTest.java     # Unitaire
-│       ├── SomeControllerIT.java    # Intégration
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/yoga_db
+spring.datasource.username=root
+spring.datasource.password=yourpassword
 ```
 
 ---
 
-## 🤝 Contributions
+## 🧪 Exécution des tests
+
+### ✅ Tests unitaires
+
+```bash
+mvn test -Punit-tests
+```
+
+### 🔁 Tests d’intégration
+
+```bash
+mvn verify -Pintegration-tests
+```
+
+---
+
+## 📊 Rapports JaCoCo
+
+Les rapports de couverture sont générés dans les dossiers suivants :
+
+- `target/jacoco-merged/`
+- `target/jacoco-unit/`
+- `target/jacoco-integration/`
+
+---
+
+## 📦 Plugins Maven
+
+Ce projet utilise :
+
+- **JaCoCo** – Couverture de code
+- **Surefire** – Tests unitaires
+- **Failsafe** – Tests d'intégration
+- **Spring Boot DevTools** – Rechargement automatique
+- **JWT (jjwt)** – Authentification sécurisée
+
+---
+
+## 💡 Bonnes pratiques
+
+- Les DTO sont exclus des rapports de couverture
+- Les tests sont séparés par type (unitaires vs. intégration)
+- Profils Maven pour chaque type de test
+
+---
+
+## 🔐 Authentification
+
+L’application utilise **JWT** pour sécuriser les endpoints. Les tokens sont générés à l'authentification et transmis dans les headers :
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+## 📚 Technologies utilisées
+
+- Spring Boot 3.1.4
+- Java 17
+- Spring Security
+- Spring Data JPA (Hibernate)
+- JWT (jjwt)
+- MySQL / H2
+- MapStruct
+- Lombok
+- JUnit / Mockito
+
+---
+
+## 🤝 Contribution
 
 Les contributions sont les bienvenues !  
-N’hésitez pas à forker le repo, proposer une PR ou ouvrir une issue.
+Forke le repo, crée une branche, propose une PR ✅
 
 ---
 
 ## 📝 Licence
 
-Ce projet est proposé dans le cadre de l’OpenClassrooms P5 - "Testez une application full-stack".
-
----
+Ce projet est sous licence **MIT**.
