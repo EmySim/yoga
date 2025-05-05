@@ -25,9 +25,9 @@ import org.junit.jupiter.api.Tag;
         classes = {SpringBootSecurityJwtApplication.class, TestSecurityConfig.class}
 )
 @Transactional
-class RegisterIntegrationTest {
+class RegisterIT {
 
-    private static final Logger logger = LoggerFactory.getLogger(RegisterIntegrationTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(RegisterIT.class);
 
     @Autowired
     private TestRestTemplate restTemplate;

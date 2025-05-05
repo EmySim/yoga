@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = SpringBootSecurityJwtApplication.class)
 @AutoConfigureMockMvc
 @Transactional
-public class SessionDetailIntegrationTest {
+public class SessionDetailIT {
 
     @Autowired
     private MockMvc mockMvc;

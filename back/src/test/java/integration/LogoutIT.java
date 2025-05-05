@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Import(TestSecurityConfig.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-public class LogoutIntegrationTest {
+public class LogoutIT {
 
     @Autowired
     private MockMvc mockMvc;

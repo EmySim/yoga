@@ -26,7 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(classes = SpringBootSecurityJwtApplication.class)
 @AutoConfigureMockMvc
 @Transactional
-public class SessionListIntegrationTest {
+public class SessionListIT {
 
     @Autowired
     private MockMvc mockMvc;

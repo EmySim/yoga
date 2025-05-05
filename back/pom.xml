@@ -155,55 +155,7 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <!-- JaCoCo -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
 
-                <executions>
-                    <!-- Fusion des fichiers -->
-                    <execution>
-                        <id>merge</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>merge</goal>
-                        </goals>
-                        <configuration>
-                            <destFile>${project.build.directory}/jacoco.exec</destFile>
-                            <fileSets>
-                                <fileSet>
-                                    <directory>${project.build.directory}</directory>
-                                    <includes>
-                                        <include>jacoco-unit.exec</include>
-                                        <include>jacoco-integration.exec</include>
-                                    </includes>
-                                </fileSet>
-                            </fileSets>
-                        </configuration>
-                    </execution>
-
-                    <!-- Rapport fusionné (exclusion DTO) -->
-                    <execution>
-                        <id>report</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <dataFile>${project.build.directory}/jacoco.exec</dataFile>
-                            <outputDirectory>${project.build.directory}/jacoco-merged</outputDirectory>
-                            <excludes>
-                                <exclude>com/openclassrooms/starterjwt/dto/**</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
     <profiles>
         <!-- UNIT TESTS -->
@@ -229,6 +181,7 @@
                             <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                         </configuration>
                     </plugin>
+
                     <!-- JaCoCo pour tests unitaires -->
                     <plugin>
                         <groupId>org.jacoco</groupId>
@@ -301,6 +254,7 @@
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
+
                     <!-- JaCoCo pour tests d'intégration -->
                     <plugin>
                         <groupId>org.jacoco</groupId>

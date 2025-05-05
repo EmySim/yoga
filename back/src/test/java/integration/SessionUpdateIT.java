@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.startsWith;
 @SpringBootTest(classes = SpringBootSecurityJwtApplication.class)
 @AutoConfigureMockMvc
 @Transactional
-public class SessionUpdateIntegrationTest {
+public class SessionUpdateIT {
 
     @Autowired
     private MockMvc mockMvc;

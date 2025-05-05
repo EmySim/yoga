@@ -30,9 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestSecurityConfig.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
 @AutoConfigureMockMvc
-public class AccountIntegrationTest {
+public class AccountIT {
 
-    private static final Logger logger = LoggerFactory.getLogger(AccountIntegrationTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccountIT.class);
 
     @Autowired
     private MockMvc mockMvc;

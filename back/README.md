@@ -67,6 +67,16 @@ mvn verify -Pintegration-tests
 
 ---
 
+### 🔁 Tests unitaires + d’intégration
+
+```bash
+mvn clean verify -P "unit-tests,integration-tests"
+```
+
+lancer le rapport  
+mvn surefire-report:report
+
+
 ## 📊 Rapports JaCoCo
 
 Les rapports de couverture sont générés dans les dossiers suivants :
