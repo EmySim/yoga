@@ -11,6 +11,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import static org.springframework.security.config.Customizer.withDefaults;
+
 
 @Profile("test")
 @TestConfiguration
@@ -38,7 +40,7 @@ public class TestSecurityConfig {
                         new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)
                 ))
                 .httpBasic(httpBasic -> httpBasic.disable()) // Désactivation explicite de HTTP Basic
-                .formLogin(form -> form.disable());          // Compatible 6.1 : désactive form login sans dépréciation
+                .formLogin(withDefaults());         // désactive form login sans dépréciation
 
         return http.build();
     }
