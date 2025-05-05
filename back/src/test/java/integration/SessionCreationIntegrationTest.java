@@ -13,6 +13,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,16 +41,22 @@ public class SessionCreationIntegrationTest {
 
     @Test
     public void shouldCreateSessionAndReturnCorrectInfo() throws Exception {
+        // Date future dynamique (toujours demain à 09:00:00)
+        String futureDate = LocalDateTime.now()
+                .plusDays(1)
+                .withHour(9).withMinute(0).withSecond(0)
+                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
         // Données de la session à créer
-        String sessionJson = """
+        String sessionJson = String.format("""
             {
                 "name": "Yoga Débutant",
-                "date": "2025-06-15T09:00:00",
+                "date": "%s",
                 "description": "Session pour les débutants",
                 "teacher_id": 1,
                 "users": []
             }
-        """;
+        """, futureDate);
 
         // Création de la session
         mockMvc.perform(post("/api/session")
@@ -57,6 +66,6 @@ public class SessionCreationIntegrationTest {
                 .andExpect(jsonPath("$.name").value("Yoga Débutant"))
                 .andExpect(jsonPath("$.description").value("Session pour les débutants"))
                 .andExpect(jsonPath("$.teacher_id").value(1))
-                .andExpect(jsonPath("$.date", startsWith("2025-06-15T09:00:00")));
+                .andExpect(jsonPath("$.date", startsWith(futureDate.substring(0, 19)))); // On ignore les fractions de seconde
     }
 }
