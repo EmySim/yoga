@@ -16,11 +16,13 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Tag;
 
+@ActiveProfiles("test")
 @Tag("integration")
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,

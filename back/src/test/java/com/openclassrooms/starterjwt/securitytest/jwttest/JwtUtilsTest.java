@@ -1,25 +1,34 @@
 package com.openclassrooms.starterjwt.securitytest.jwttest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.openclassrooms.starterjwt.config.TestSecurityConfig;
 import com.openclassrooms.starterjwt.security.jwt.JwtUtils;
+import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
+import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.core.Authentication;
+import org.springframework.test.context.ActiveProfiles;
 
-import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
+import static org.junit.jupiter.api.Assertions.*;
 
+@ActiveProfiles("test")
+@Tag("unit-tests")
+@SpringBootTest
+@Import(TestSecurityConfig.class)
 class JwtUtilsTest {
 
+    @Autowired
     private JwtUtils jwtUtils;
 
     private Authentication authentication;
 
     @BeforeEach
     void setUp() {
-        jwtUtils = new JwtUtils();
-
         // Simuler l'authentification et les détails utilisateur
         authentication = Mockito.mock(Authentication.class);
         UserDetailsImpl userDetails = Mockito.mock(UserDetailsImpl.class);
@@ -31,8 +40,8 @@ class JwtUtilsTest {
     void testGenerateJwtToken() {
         String token = jwtUtils.generateJwtToken(authentication);
         assertNotNull(token, "Le token généré ne doit pas être null.");
-        assertTrue(token.split("\\.").length == 3, "Le token doit contenir 3 parties séparées par des points.");
-        System.out.println("Token généré : " + token);
+        assertEquals(3, token.split("\\.").length, "Le token doit contenir 3 parties séparées par des points.");
+        System.out.println("✅ Token généré : " + token);
     }
 
     @Test
@@ -45,7 +54,7 @@ class JwtUtilsTest {
 
     @Test
     void testValidateJwtToken_MalformedToken() {
-        String malformedToken = "malformed.token"; // Un token mal formé
+        String malformedToken = "malformed.token"; // Token incomplet ou tronqué
 
         boolean isValid = jwtUtils.validateJwtToken(malformedToken);
         assertFalse(isValid, "La validation doit échouer pour un token mal formé.");
@@ -55,12 +64,10 @@ class JwtUtilsTest {
     void testGetUserNameFromJwtToken_InvalidToken() {
         String invalidToken = "invalid.jwt.token";
 
-        try {
-            String username = jwtUtils.getUserNameFromJwtToken(invalidToken);
-            fail("Une exception était attendue pour un token invalide.");
-        } catch (Exception e) {
-            assertTrue(e instanceof io.jsonwebtoken.JwtException, "L'exception doit être de type JwtException.");
-            System.out.println("Exception capturée comme attendu : " + e.getMessage());
-        }
+        Exception exception = assertThrows(JwtException.class, () -> {
+            jwtUtils.getUserNameFromJwtToken(invalidToken);
+        });
+
+        System.out.println("✅ Exception capturée comme attendu : " + exception.getMessage());
     }
 }

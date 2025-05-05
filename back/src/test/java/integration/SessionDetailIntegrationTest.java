@@ -13,12 +13,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Date;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ActiveProfiles("test")
 @Tag("integration")
 @SpringBootTest(classes = SpringBootSecurityJwtApplication.class)
 @AutoConfigureMockMvc
