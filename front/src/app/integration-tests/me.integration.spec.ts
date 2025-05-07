@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/angular';
-import { MeComponent } from '../app/components/me/me.component';
-import { SessionService } from '../app/services/session.service';
-import { UserService } from '../app/services/user.service';
+import { MeComponent } from '../components/me/me.component';
+import { SessionService } from '../services/session.service';
+import { UserService } from '../services/user.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card'; // Import MatCardModule
 import { MatIconModule } from '@angular/material/icon';

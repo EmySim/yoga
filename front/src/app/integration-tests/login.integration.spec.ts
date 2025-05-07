@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/angular';
-import { LoginComponent } from '../app/features/auth/components/login/login.component';
-import { AuthService } from '../app/features/auth/services/auth.service';
-import { SessionService } from '../app/services/session.service';
+import { LoginComponent } from '../features/auth/components/login/login.component';
+import { AuthService } from '../features/auth/services/auth.service';
+import { SessionService } from '../services/session.service';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { AppRoutingModule } from '../app/app-routing.module';
+import { AppRoutingModule } from '../app-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';

@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/angular';
-import { ListComponent } from '../app/features/sessions/components/list/list.component';
-import { DetailComponent } from '../app/features/sessions/components/detail/detail.component';
-import { SessionApiService } from '../app/features/sessions/services/session-api.service';
-import { SessionService } from '../app/services/session.service';
+import { ListComponent } from '../features/sessions/components/list/list.component';
+import { DetailComponent } from '../features/sessions/components/detail/detail.component';
+import { SessionApiService } from '../features/sessions/services/session-api.service';
+import { SessionService } from '../services/session.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';

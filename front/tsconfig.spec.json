@@ -4,12 +4,17 @@
     "outDir": "./out-tsc/spec",
     "types": [
       "jest",
-      "@testing-library/jest-dom/extend-expect",
+      "@testing-library/jest-dom",
       "node"
     ],
-    "module": "commonjs",
+    "module": "esnext",               // important : compatible avec ESM
+    "target": "es2018",               // adapté aux modules modernes
+    "allowJs": true,
     "emitDecoratorMetadata": true,
-    "allowJs": true
+    "esModuleInterop": true,         // nécessaire pour Jest + ESM
+    "moduleResolution": "node",      // standard actuel
+    "resolveJsonModule": true,       // utile si tu importes du JSON dans les tests
+    "isolatedModules": true          // recommandé avec Jest + TypeScript
   },
   "files": [
     "src/polyfills.ts"
@@ -17,6 +22,6 @@
   "include": [
     "src/**/*.spec.ts",
     "src/**/*.d.ts",
-    "./jest-setup.ts"
+    "setup-jest.ts"                // ton vrai fichier de setup (renommé correctement ici)
   ]
 }

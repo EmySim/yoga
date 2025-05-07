@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/angular';
-import { RegisterComponent } from '../app/features/auth/components/register/register.component';
-import { AuthService } from '../app/features/auth/services/auth.service';
+import { RegisterComponent } from '../features/auth/components/register/register.component';
+import { AuthService } from '../features/auth/services/auth.service';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
