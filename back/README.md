@@ -8,32 +8,34 @@ Une application Spring Boot moderne pour gérer les cours, les utilisateurs, et 
 
 ## 🚀 Fonctionnalités
 
-- API REST sécurisée avec Spring Security & JWT
-- Gestion des utilisateurs, des rôles et des cours
-- Base de données relationnelle (MySQL ou H2 pour les tests)
-- Validation des données avec Hibernate Validator
-- Tests unitaires et d'intégration avec JaCoCo, Surefire & Failsafe
-- Génération de rapports de couverture de code
-- Utilisation de Lombok & MapStruct pour simplifier le code
+- ✅ API REST sécurisée avec Spring Security & JWT
+- 🧑‍🎓 Gestion des utilisateurs, des rôles et des cours
+- 🗄️ Base de données relationnelle (MySQL en prod / H2 pour les tests)
+- 🧼 Validation des données avec Hibernate Validator
+- 🧪 Tests unitaires & d'intégration (Surefire + Failsafe)
+- 📊 Rapports de couverture avec JaCoCo
+- 🪶 Code simplifié grâce à Lombok & MapStruct
 
 ---
 
 ## ⚙️ Prérequis
 
-- Java 17+
-- Maven 3.8+
-- MySQL (pour l’environnement de prod/dev)
+| Outil       | Version minimum |
+|-------------|------------------|
+| Java        | 17+              |
+| Maven       | 3.8+             |
+| MySQL       | recommandé       |
 
 ---
 
-## 🛠️ Installation
+## 🛠️ Installation & Build
 
 ```bash
 # Clone du projet
 git clone https://github.com/EmySim/yoga.git
 cd yoga-app
 
-# Compilation et tests
+# Compilation et exécution des tests unitaires + intégration
 mvn clean install
 ```
 
@@ -41,7 +43,7 @@ mvn clean install
 
 ## 🗃️ Configuration de la base de données
 
-Modifie le fichier `application.properties` ou `application.yml` pour configurer l'accès à ta base de données MySQL :
+Edite le fichier `src/main/resources/application.properties` ou `application.yml` :
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/yoga_db
@@ -54,90 +56,94 @@ spring.datasource.password=yourpassword
 ## 🧪 Exécution des tests
 
 ### ✅ Tests unitaires
-
+pour l'exécution des tests unitaires et les rapports d'exécution et de couverture.
 ```bash
-mvn test -Punit-tests
+mvn verify -Punit-tests
 ```
 
 ### 🔁 Tests d’intégration
-
+pour l'exécution des tests d'intégration et les rapports d'exécution et de couverture.
 ```bash
-mvn verify -Pintegration-tests
+mvn verify site -P integration-tests
 ```
 
 ---
 
-### 🔁 Tests unitaires + d’intégration
+## 📊 Rapports de couverture JaCoCo
 
-```bash
-mvn clean verify -P "unit-tests,integration-tests"
-```
+Les rapports HTML de couverture se trouvent ici :
 
-lancer le rapport  
-mvn surefire-report:report
+| Type de test       | Emplacement du rapport                  |
+|--------------------|------------------------------------------|
+| Tests unitaires     | `target/jacoco-unit/index.html`         |
+| Tests d’intégration | `target/jacoco-integration/index.html`  |
+
+## 📊 Rapports d'exécution
+
+Les rapports HTML d'exécution se trouvent ici :
+
+| Type de test       | Emplacement du rapport                      |
+|--------------------|----------------------------------------------|
+| Tests unitaires     | `target/reports/surefire.html`              |
+| Tests d’intégration | `target/site/failsafe-report.html`          |
 
 
-## 📊 Rapports JaCoCo
-
-Les rapports de couverture sont générés dans les dossiers suivants :
-
-- `target/jacoco-merged/`
-- `target/jacoco-unit/`
-- `target/jacoco-integration/`
-
----
-
-## 📦 Plugins Maven
-
-Ce projet utilise :
-
-- **JaCoCo** – Couverture de code
-- **Surefire** – Tests unitaires
-- **Failsafe** – Tests d'intégration
-- **Spring Boot DevTools** – Rechargement automatique
-- **JWT (jjwt)** – Authentification sécurisée
+> Les DTO sont volontairement exclus de ces rapports.
 
 ---
 
-## 💡 Bonnes pratiques
+## 📦 Plugins Maven utilisés
 
-- Les DTO sont exclus des rapports de couverture
-- Les tests sont séparés par type (unitaires vs. intégration)
-- Profils Maven pour chaque type de test
+| Plugin                   | Usage                            |
+|--------------------------|----------------------------------|
+| **JaCoCo**               | Couverture de code               |
+| **Surefire**             | Exécution des tests unitaires    |
+| **Failsafe**             | Exécution des tests d’intégration |
+| **DevTools**             | Rechargement à chaud en dev      |
+| **jjwt (JWT)**           | Authentification sécurisée       |
 
 ---
 
 ## 🔐 Authentification
 
-L’application utilise **JWT** pour sécuriser les endpoints. Les tokens sont générés à l'authentification et transmis dans les headers :
+L’authentification se fait via JWT.  
+Après login, un token est retourné et doit être ajouté dans l’en-tête des requêtes protégées :
 
 ```
-Authorization: Bearer <token>
+Authorization: Bearer <votre_token>
 ```
 
 ---
 
-## 📚 Technologies utilisées
+## 📚 Technologies
 
-- Spring Boot 3.1.4
-- Java 17
-- Spring Security
-- Spring Data JPA (Hibernate)
-- JWT (jjwt)
-- MySQL / H2
-- MapStruct
-- Lombok
-- JUnit / Mockito
+- 🎯 Spring Boot 3.1.4
+- 🔐 Spring Security
+- 🧬 Spring Data JPA (Hibernate)
+- 🛡️ JWT (jjwt)
+- 🗃️ MySQL / H2
+- 🛠️ Lombok & MapStruct
+- 🧪 JUnit 5 / Mockito
+
+---
+
+## 💡 Bonnes pratiques
+
+- Séparation stricte entre tests unitaires et tests d’intégration
+- Couverture exigée ≥ 80 % (30 % min via tests d’intégration)
+- Profils Maven dédiés pour chaque type de test (`unit-tests`, `integration-tests`)
+- Tests d’intégration dans `src/integration/` avec suffixe `*IT.java`
 
 ---
 
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues !  
-Forke le repo, crée une branche, propose une PR ✅
+Les contributions sont bienvenues !  
+Forkez ce repo, créez votre branche (`feature/ma-fonctionnalité`), puis proposez une PR 💪
 
 ---
 
 ## 📝 Licence
 
-Ce projet est sous licence **MIT**.
+Distribué sous licence **MIT**.  
+Utilisable, modifiable, partageable sans modération 🧘‍♀️

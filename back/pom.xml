@@ -23,7 +23,7 @@
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Starters -->
+        <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -41,25 +41,24 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Databases -->
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- JetBrains Annotations -->
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>24.0.1</version>
             <scope>compile</scope>
+        </dependency>
+
+        <!-- Database -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- JWT -->
@@ -109,14 +108,14 @@
             <version>6.2.7.Final</version>
         </dependency>
 
-        <!-- Spring Boot DevTools -->
+        <!-- DevTools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Spring Boot Test -->
+        <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -140,53 +139,45 @@
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
-
+    <build>
+        <plugins>
+            <!-- JaCoCo commun -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
-        <!-- UNIT TESTS -->
+        <!-- TESTS UNITAIRES -->
         <profile>
             <id>unit-tests</id>
             <build>
                 <plugins>
-                    <!-- Surefire -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>3.0.0-M5</version>
                         <configuration>
+                            <groups>unit</groups>
                             <includes>
                                 <include>**/*Test.java</include>
                             </includes>
                             <excludes>
                                 <exclude>**/integration/**/*</exclude>
                             </excludes>
-                            <properties>
-                                <excludeTags>integration</excludeTags>
-                            </properties>
-                            <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                         </configuration>
                     </plugin>
-
-                    <!-- JaCoCo pour tests unitaires -->
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.8</version>
                         <executions>
                             <execution>
                                 <id>prepare-agent-unit</id>
@@ -217,12 +208,19 @@
             </build>
         </profile>
 
-        <!-- INTEGRATION TESTS -->
+        <!-- TESTS D'INTÉGRATION -->
         <profile>
             <id>integration-tests</id>
             <build>
                 <plugins>
-                    <!-- Failsafe -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
@@ -244,22 +242,18 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <groups>integration</groups>
                             <includes>
                                 <include>**/integration/**/*IT.java</include>
                             </includes>
-                            <reportsDirectory>${project.build.directory}/failsafe-reports</reportsDirectory>
-                            <testFailureIgnore>false</testFailureIgnore>
                             <systemPropertyVariables>
                                 <spring.profiles.active>test</spring.profiles.active>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
-
-                    <!-- JaCoCo pour tests d'intégration -->
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.8</version>
                         <executions>
                             <execution>
                                 <id>prepare-agent-integration</id>
@@ -288,24 +282,25 @@
                     </plugin>
                 </plugins>
             </build>
+
+            <!-- Ajout du rapport HTML Failsafe -->
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-report-plugin</artifactId>
+                        <version>3.2.5</version>
+                        <reportSets>
+                            <reportSet>
+                                <id>integration-tests</id>
+                                <reports>
+                                    <report>failsafe-report-only</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
+                </plugins>
+            </reporting>
         </profile>
     </profiles>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.0.0-M5</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>surefire-report</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
-
 </project>
