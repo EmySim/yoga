@@ -28,7 +28,7 @@ module.exports = {
   ],
 
   collectCoverage: true,
-  coverageDirectory: './coverage/jest',
+  coverageDirectory: './coverage',
   coverageReporters: ['html', 'lcov', 'text-summary'],
 
   collectCoverageFrom: [

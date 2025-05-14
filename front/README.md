@@ -1,72 +1,127 @@
-# Yoga
+# 🧘‍♀️ Yoga App – Full Stack Testing Project
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.1.0.
+Ce projet a été généré avec [Angular CLI](https://github.com/angular/angular-cli) version 14.1.0.
 
-## Start the project
+---
 
-Git clone:
+## 🚀 Démarrage rapide
 
-> git clone https://github.com/OpenClassrooms-Student-Center/P5-Full-Stack-testing
+### Cloner, installer et démarrer
 
-Go inside folder:
+```bash
+# 1. Cloner le dépôt
+git clone https://github.com/OpenClassrooms-Student-Center/P5-Full-Stack-testing
+cd yoga
 
-> cd yoga
+# 2. Installer les dépendances
+npm install
 
-Install dependencies:
+# 3. Lancer le front-end (Angular)
+npm run start
+```
 
-> npm install
+---
 
-Launch Front-end:
+## 🧪 Tests
 
-> npm run start;
+## 🧪 Lancer les tests
 
+### ✅ Lancer **uniquement les tests unitaires** :
 
-## Ressources
+```bash
+npm run test
+```
 
-### Mockoon env 
+### 🔁 Lancer **uniquement les tests d’intégration** :
 
-### Postman collection
+```bash
+npm run test:integration
+```
 
-For Postman import the collection
+---
 
-> ressources/postman/yoga.postman_collection.json 
+### ⚙️ Options utiles avec Jest
 
-by following the documentation: 
+| Commande | Description |
+|----------|-------------|
+| `npx jest` | Lance tous les tests (unitaires + intégration) |
+| `npx jest path/to/your/test.spec.ts` | Lance un test spécifique |
+| `npx jest --verbose` | Affiche un rapport détaillé |
+| `npx jest --watch` | Surveille les fichiers et relance les tests à chaque modification |
+| `npx jest --coverage` | Génère un rapport de couverture |
+| `npm run test:coverage` | Génère un rapport global de couverture |
+| `npm run clean:coverage` | nettoye le dossier `coverage` |
 
-https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#importing-data-into-postman
+---
 
+### 📊 Rapport de couverture
 
-### MySQL
+Après avoir lancé un test avec `--coverage`, tu peux consulter le rapport ici :
 
-SQL script for creating the schema is available `ressources/sql/script.sql`
+> `front/coverage/lcov-report/index.html`
 
-By default the admin account is:
-- login: yoga@studio.com
-- password: test!1234
+---
 
+### 🧭 Tests de bout en bout (Cypress)
 
-### Test
+Lancer les tests E2E :
 
-#### E2E
+```bash
+npm run e2e
+```
 
-Launching e2e test:
+Générer un rapport de couverture (après avoir lancé les tests E2E) :
 
-> npm run e2e
+```bash
+npm run e2e:coverage
+```
 
-Generate coverage report (you should launch e2e test before):
+Le rapport de couverture se trouve ici :
 
-> npm run e2e:coverage
+> `front/coverage/lcov-report/index.html`
 
-Report is available here:
+---
 
-> front/coverage/lcov-report/index.html
+## 🛠️ Ressources Backend
 
-#### Unitary test
+### 🔌 Environnement Mockoon
 
-Launching test:
+Un environnement Mockoon est disponible pour simuler l'API.
 
-> npm run test
+### 📬 Collection Postman
 
-for following change:
+Importe la collection Postman depuis :
 
-> npm run test:watch
+> `ressources/postman/yoga.postman_collection.json`
+
+Documentation officielle :  
+👉 [Importer des données dans Postman](https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#importing-data-into-postman)
+
+---
+
+### 🐬 Base de données MySQL
+
+Le script SQL pour créer le schéma est disponible ici :
+
+> `ressources/sql/script.sql`
+
+#### Compte administrateur par défaut
+
+- **Email**: `yoga@studio.com`
+- **Mot de passe**: `test!1234`
+
+---
+
+## 🎓 À propos
+
+Ce projet fait partie du parcours OpenClassrooms "Testez une application Full Stack" (P5).  
+Il couvre :
+
+- ✅ Les tests unitaires avec Jest  
+- 🧪 Les tests de bout en bout avec Cypress  
+- 🔐 Les tests d’intégration d’API  
+- 📈 L’analyse de la couverture de code
+
+---
+
+Bon courage et bons tests ! 💪🧘‍♂️
