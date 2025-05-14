@@ -1,6 +1,8 @@
 // === Utils ===
-export const getFutureDateISO = (daysAhead: number) =>
-  new Date(Date.now() + daysAhead * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+export const getFutureDateISO = (daysAhead: number, extraHours: number = 0) =>
+  new Date(Date.now() + (daysAhead * 24 + extraHours) * 60 * 60 * 1000)
+    .toISOString()
+    .split('T')[0];
 
 export const formatDateForDisplay = (isoDate: string) =>
   new Date(isoDate).toLocaleDateString('en-US', {
@@ -8,7 +10,6 @@ export const formatDateForDisplay = (isoDate: string) =>
     month: 'long',
     day: 'numeric',
   });
-
 
 // === Utilisateurs ===
 export const adminUser = {
@@ -60,11 +61,30 @@ export const createSession = (date: string) => ({
   users: [],
 });
 
-export const updatedSession = (updatedDate: string) => ({
+export const updatedSession = {
   id: 92,
   name: 'Updated Yoga Session',
+  startDate: getFutureDateISO(7), // dans 7 jours
+  endDate: getFutureDateISO(7, 2), // +2h
+  date: getFutureDateISO(7), // ← ajouté pour compatibilité avec affichage
+  teacher: { ...teacherAlice},
   description: 'An updated relaxing yoga session',
-  date: updatedDate,
-  teacher: { ...teacherAlice },
-  users: [],
-});
+};
+
+export const sessionDetails = {
+  id: 92,
+  name: 'Updated Yoga Session',
+  teacher: {
+    ...teacherAlice,
+    lastName: teacherAlice.lastName.toUpperCase(),
+  },
+  imageUrl: 'https://example.com/image.jpg',
+  users: [{ id: 12 }],
+  attendees: [12],
+  startDate: updatedSession.startDate,
+  endDate: updatedSession.endDate,
+  date: updatedSession.startDate,
+  description: 'An updated relaxing yoga session',
+  createdAt: '2025-05-10T08:00:00.000Z',
+  updatedAt: '2025-05-15T10:00:00.000Z',
+};

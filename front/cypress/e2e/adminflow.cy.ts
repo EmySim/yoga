@@ -8,6 +8,7 @@ import {
   updatedSession,
   getFutureDateISO,
   formatDateForDisplay,
+  sessionDetails,
 } from '../support/testData';
 
 import {
@@ -57,8 +58,12 @@ describe('Admin End-to-End Flow', () => {
     cy.get('input[data-testid="name-input"]').type(session.name);
     cy.get('input[data-testid="date-input"]').type(sessionDateISO);
     cy.get('mat-select[data-testid="teacher-select"]').click();
-    cy.get('mat-option').contains(`${teacherVictoria.firstName} ${teacherVictoria.lastName}`).click();
-    cy.get('textarea[data-testid="description-input"]').type(session.description);
+    cy.get('mat-option')
+      .contains(`${teacherVictoria.firstName} ${teacherVictoria.lastName}`)
+      .click();
+    cy.get('textarea[data-testid="description-input"]').type(
+      session.description
+    );
     cy.get('button[data-testid="submit-button"]').click();
 
     cy.wait('@createSession');
@@ -66,11 +71,15 @@ describe('Admin End-to-End Flow', () => {
     cy.url().should('include', '/sessions');
     cy.contains(session.name, { timeout: 10000 }).should('exist');
 
-    // === STEP 2: Update the session ===
-    const updated = updatedSession(updatedDateISO);
+    // === STEP 2: Session Update ===
+    const updated = {
+      ...updatedSession,
+      startDate: updatedDateISO,
+      date: updatedDateISO,
+    };
     interceptTeachers([teacherAlice]);
-    interceptSessionGet({ ...session, id: session.id.toString() });
-    interceptSessionUpdate(session.id.toString());
+    interceptSessionGet({ ...session }); // ✅ id reste en number
+    interceptSessionUpdate(session.id); // ✅ id en number
     interceptSessionList([updated]);
 
     cy.window().scrollTo('bottom');
@@ -88,30 +97,56 @@ describe('Admin End-to-End Flow', () => {
     cy.get('input[data-testid="name-input"]').clear().type(updated.name);
     cy.get('input[data-testid="date-input"]').clear().type(updatedDateISO);
     cy.get('mat-select[data-testid="teacher-select"]').click();
-    cy.get('mat-option').contains(`${teacherAlice.firstName} ${teacherAlice.lastName}`).click();
-    cy.get('textarea[data-testid="description-input"]').clear().type(updated.description);
+    cy.get('mat-option')
+      .contains(`${teacherAlice.firstName} ${teacherAlice.lastName}`)
+      .click();
+    cy.get('textarea[data-testid="description-input"]')
+      .clear()
+      .type(updated.description);
 
     cy.get('button[data-testid="submit-button"]').click();
     cy.wait('@updateSession');
     cy.wait('@getSessions');
 
     cy.url().should('include', '/sessions');
+    cy.contains(updatedDateDisplay).should('exist');
     cy.window().scrollTo('bottom');
     cy.contains(updated.name).should('exist');
     cy.contains(updated.description).should('exist');
-    cy.contains(updatedDateDisplay).should('exist'); // ✅ mise à jour ici
+    cy.contains(updatedDateDisplay).should('exist');
 
-    // === STEP 3: View and delete the session ===
-    interceptSessionGet({ ...updated, id: updated.id.toString() });
-    interceptSessionDelete(updated.id.toString());
+    // === STEP 3: session details ===
+
+    cy.log('📦 Interceptions pour le détail de la session');
+
+    // 👇 On n’utilise PAS une version incomplète de `updated`
+    interceptSessionDelete(updated.id);
     interceptSessionList([]);
 
-    cy.get('button[data-testid="detail-button"]').should('exist').click();
-    cy.contains(updated.name).should('exist');
-    cy.contains(`${teacherAlice.firstName} ${teacherAlice.lastName}`).should('exist');
-    cy.contains(updatedDateDisplay).should('exist'); // ✅ ici aussi
-    cy.contains(updated.description).should('exist');
+    // ✅ On utilise uniquement l’objet complet avec le prof inclus
+    interceptSessionGet(sessionDetails);
 
+    cy.log('👀 Ouverture des détails de la session');
+    cy.get('button[data-testid="detail-button"]').should('exist').click();
+
+    cy.log('✅ Vérification des éléments affichés');
+    cy.contains(sessionDetails.name).should('exist');
+    cy.contains(`${teacherAlice.firstName} ${teacherAlice.lastName.toUpperCase()}`).should('exist');
+    cy.contains(sessionDetails.name).should('exist');
+    cy.contains(sessionDetails.description).should('exist');
+
+    // Tu peux ici remplacer "Expected attendees value" par la valeur réelle attendue si besoin
+    const attendees = sessionDetails.attendees.length.toString();
+    cy.contains(attendees).should('exist');
+
+    cy.contains('Create at:').should('exist');
+    cy.contains('Last update:').should('exist');
+
+    cy.window().scrollTo('bottom');
+    cy.contains(updatedDateDisplay).should('exist');
+    cy.contains(sessionDetails.description).should('exist');
+
+    cy.log('🗑 Suppression de la session');
     cy.visit(`/sessions/detail/${updated.id}`);
     cy.wait('@getSessionDetail');
     cy.get('[data-testid=delete-button]').click();
