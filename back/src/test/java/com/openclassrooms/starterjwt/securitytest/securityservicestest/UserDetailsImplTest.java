@@ -3,13 +3,14 @@ package com.openclassrooms.starterjwt.securitytest.securityservicestest;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 import java.util.HashSet;
-
+@Tag("unit")
 class UserDetailsImplTest {
 
     @Test
