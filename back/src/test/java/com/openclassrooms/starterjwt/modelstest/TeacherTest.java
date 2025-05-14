@@ -2,6 +2,7 @@ package com.openclassrooms.starterjwt.modelstest;
 
 import com.openclassrooms.starterjwt.models.Teacher;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -10,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@Tag("unit")
 public class TeacherTest {
 
     private Validator validator;

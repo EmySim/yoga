@@ -1,6 +1,7 @@
 package com.openclassrooms.starterjwt.securitytest;
 
 import com.openclassrooms.starterjwt.security.WebSecurityConfig;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
+@Tag("unit")
 @SpringBootTest
 @Import(WebSecurityConfig.class)
 class WebSecurityConfigTest {

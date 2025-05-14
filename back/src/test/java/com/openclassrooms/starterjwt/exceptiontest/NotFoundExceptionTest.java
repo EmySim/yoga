@@ -1,12 +1,13 @@
 package com.openclassrooms.starterjwt.exceptiontest;
 
 import com.openclassrooms.starterjwt.exception.NotFoundException;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@Tag("unit")
 class NotFoundExceptionTest {
 
     @Test

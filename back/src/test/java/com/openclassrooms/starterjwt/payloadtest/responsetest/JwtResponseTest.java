@@ -1,9 +1,10 @@
 package com.openclassrooms.starterjwt.payloadtest.responsetest;
 
 import com.openclassrooms.starterjwt.payload.response.JwtResponse;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-
+@Tag("unit")
 class JwtResponseTest {
 
     @Test

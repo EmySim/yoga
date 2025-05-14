@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
-@Tag("unit-tests")
+@Tag("unit")
 @SpringBootTest
 @Import(TestSecurityConfig.class)
 class JwtUtilsTest {

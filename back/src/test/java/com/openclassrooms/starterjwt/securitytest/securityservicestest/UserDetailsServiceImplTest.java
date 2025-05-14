@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.openclassrooms.starterjwt.security.services.UserDetailsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,7 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
-
+@Tag("unit")
 class UserDetailsServiceImplTest {
 
     @Mock

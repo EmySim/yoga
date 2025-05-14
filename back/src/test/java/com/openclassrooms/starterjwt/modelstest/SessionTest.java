@@ -4,6 +4,7 @@ import com.openclassrooms.starterjwt.models.Session;
 import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.models.User;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import java.util.Collections;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@Tag("unit")
 public class SessionTest {
 
     private Teacher teacher;
