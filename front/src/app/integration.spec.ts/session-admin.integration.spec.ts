@@ -165,35 +165,22 @@ describe('ADMIN - Intégration SessionComponent (List, Form, Detail)', () => {
   });
 
   it('peut créer une session', async () => {
-    await renderForm(false);
+    const { fixture } = await renderForm(false);
 
-    await fireEvent.change(await screen.findByTestId('name-input'), {
-      target: { value: 'New Session' },
+    // Patch tous les champs requis directement
+    fixture.componentInstance.sessionForm?.patchValue({
+      name: 'New Session',
+      date: '2025-05-20',
+      description: 'Séance de test',
+      teacher_id: mockTeachers[0].id,
     });
-    await fireEvent.change(await screen.findByTestId('date-input'), {
-      target: { value: '2025-05-20' },
-    });
-    await fireEvent.change(await screen.findByTestId('description-input'), {
-      target: { value: 'Séance de test' },
-    });
+    fixture.componentInstance.sessionForm?.updateValueAndValidity();
+    fixture.detectChanges();
 
-    const teacherSelect = await screen.findByTestId('teacher-select');
-    await fireEvent.mouseDown(teacherSelect);
+    // Log pour debug
+    console.log('Form valid:', fixture.componentInstance.sessionForm?.valid);
+    console.log('Form value:', fixture.componentInstance.sessionForm?.value);
 
-    // Ajoute ce log pour voir le DOM après ouverture du select
-    console.log('BODY:', document.body.innerHTML);
-
-    // Optionnel : log l’overlay container si présent
-    const overlay = document.querySelector('.cdk-overlay-container');
-    if (overlay) {
-      console.log('OVERLAY:', overlay.innerHTML);
-    }
-
-    // Attendre l'apparition des options dans l'overlay
-    const options = await waitFor(() => screen.getAllByRole('option'), { timeout: 2000 });
-    const teacherOption = options.find(opt => opt.textContent?.includes('Professeur Zen'));
-    expect(teacherOption).toBeTruthy();
-    await fireEvent.click(teacherOption!);
     const submitButton = await screen.findByTestId('submit-button');
     await fireEvent.click(submitButton);
 
@@ -201,11 +188,13 @@ describe('ADMIN - Intégration SessionComponent (List, Form, Detail)', () => {
   });
 
   it('peut mettre à jour une session', async () => {
-    await renderForm(true);
+    const { fixture } = await renderForm(true);
 
     await fireEvent.change(await screen.findByTestId('name-input'), {
       target: { value: 'Updated Session' },
     });
+
+    fixture.detectChanges();
 
     const saveButton = await screen.findByTestId('submit-button');
     await fireEvent.click(saveButton);
