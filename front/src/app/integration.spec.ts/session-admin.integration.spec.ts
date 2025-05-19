@@ -4,6 +4,7 @@ import { FormComponent } from '../features/sessions/components/form/form.compone
 import { DetailComponent } from '../features/sessions/components/detail/detail.component';
 import { SessionApiService } from '../features/sessions/services/session-api.service';
 import { SessionService } from '../services/session.service';
+import { TeacherService } from '../services/teacher.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -11,11 +12,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 import '@testing-library/jest-dom';
+
+// --- MOCKS GLOBAUX POUR SERVICES DEPENDANT DE HTTPCLIENT ---
 
 const mockSessions = [
   {
@@ -28,36 +31,55 @@ const mockSessions = [
   },
 ];
 
+const mockTeachers = [{ id: 101, firstName: 'Professeur', lastName: 'Zen' }];
+
+// Mock complet de SessionApiService
 const mockSessionApiService = {
   all: jest.fn(() => of(mockSessions)),
   create: jest.fn(() => of(mockSessions[0])),
   update: jest.fn(() => of(mockSessions[0])),
   delete: jest.fn(() => of(true)),
   detail: jest.fn(() => of(mockSessions[0])),
-  getTeachers: jest.fn(() =>
-    of([{ id: 101, firstName: 'Professeur', lastName: 'Zen' }])
-  ),
-};
+  getTeachers: jest.fn(() => of(mockTeachers)),
+} as any;
 
+// Mock TeacherService 
+class MockTeacherService {
+  getTeachers = jest.fn(() => of(mockTeachers));
+  all = jest.fn(() => of(mockTeachers));
+}
+
+// Mock Router
 const mockRouter = {
   navigate: jest.fn(),
   url: '/sessions/create',
 };
 
+// Mock SessionService
+const mockSessionService: Partial<SessionService> = {
+  sessionInformation: {
+    admin: true,
+    id: 1,
+    token: '',
+    type: 'admin',
+    username: 'admin',
+    firstName: 'Admin',
+    lastName: 'User',
+  },
+  isLogged: true,
+  $isLogged: () => of(true),
+};
+
+// ---------------------- FONCTIONS RENDER ----------------------
+
 const renderList = async () =>
   render(ListComponent, {
-    imports: [MatCardModule, MatIconModule, HttpClientModule],
+    imports: [MatCardModule, MatIconModule, NoopAnimationsModule],
     providers: [
       { provide: SessionApiService, useValue: mockSessionApiService },
+      { provide: SessionService, useValue: mockSessionService },
       { provide: Router, useValue: mockRouter },
-      {
-        provide: SessionService,
-        useValue: {
-          sessionInformation: { admin: true, id: 1, token: '' },
-          isLogged: true,
-          $isLogged: of(true),
-        },
-      },
+      { provide: TeacherService, useClass: MockTeacherService },
       {
         provide: ActivatedRoute,
         useValue: {
@@ -78,20 +100,14 @@ const renderForm = async (isUpdate = false) => {
       MatInputModule,
       MatSelectModule,
       MatButtonModule,
-      HttpClientModule,
       ReactiveFormsModule,
+      NoopAnimationsModule,
     ],
     providers: [
       { provide: SessionApiService, useValue: mockSessionApiService },
+      { provide: SessionService, useValue: mockSessionService },
       { provide: Router, useValue: mockRouter },
-      {
-        provide: SessionService,
-        useValue: {
-          sessionInformation: { admin: true },
-          isLogged: true,
-          $isLogged: of(true),
-        },
-      },
+      { provide: TeacherService, useClass: MockTeacherService },
       {
         provide: ActivatedRoute,
         useValue: {
@@ -116,21 +132,15 @@ const renderDetail = async () =>
       MatFormFieldModule,
       MatInputModule,
       MatButtonModule,
-      HttpClientModule,
       MatSelectModule,
       ReactiveFormsModule,
+      NoopAnimationsModule,
     ],
     providers: [
       { provide: SessionApiService, useValue: mockSessionApiService },
+      { provide: SessionService, useValue: mockSessionService },
       { provide: Router, useValue: mockRouter },
-      {
-        provide: SessionService,
-        useValue: {
-          sessionInformation: { admin: true, id: 1, token: '' },
-          isLogged: true,
-          $isLogged: of(true),
-        },
-      },
+      { provide: TeacherService, useClass: MockTeacherService },
       {
         provide: ActivatedRoute,
         useValue: {
@@ -141,25 +151,15 @@ const renderDetail = async () =>
     ],
   });
 
+// ---------------------- TESTS ----------------------
+
 describe('ADMIN - Intégration SessionComponent (List, Form, Detail)', () => {
-  beforeAll(() => {
-    if (typeof window.fetch !== 'function') {
-      window.fetch = () => Promise.reject(new Error('fetch is disabled in tests')) as any;
-    }
-    jest.spyOn(window, 'fetch').mockImplementation(() =>
-      Promise.reject(new Error('fetch is disabled in tests'))
-    );
-
-    jest.spyOn(console, 'error').mockImplementation(() => { });
-  });
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('affiche les boutons admin', async () => {
     await renderList();
-
     expect(await screen.findByTestId('create-button')).toBeInTheDocument();
     expect(await screen.findAllByTestId('edit-button')).toHaveLength(mockSessions.length);
   });
@@ -180,13 +180,22 @@ describe('ADMIN - Intégration SessionComponent (List, Form, Detail)', () => {
     const teacherSelect = await screen.findByTestId('teacher-select');
     await fireEvent.mouseDown(teacherSelect);
 
-    const teacherOption = await screen.findByText('Professeur Zen');
+    // Ajoute ce log pour voir le DOM après ouverture du select
+    console.log('BODY:', document.body.innerHTML);
 
+    // Optionnel : log l’overlay container si présent
+    const overlay = document.querySelector('.cdk-overlay-container');
+    if (overlay) {
+      console.log('OVERLAY:', overlay.innerHTML);
+    }
 
-    await fireEvent.click(teacherOption);
-
-    const saveButton = await screen.findByTestId('submit-button');
-    await fireEvent.click(saveButton);
+    // Attendre l'apparition des options dans l'overlay
+    const options = await waitFor(() => screen.getAllByRole('option'), { timeout: 2000 });
+    const teacherOption = options.find(opt => opt.textContent?.includes('Professeur Zen'));
+    expect(teacherOption).toBeTruthy();
+    await fireEvent.click(teacherOption!);
+    const submitButton = await screen.findByTestId('submit-button');
+    await fireEvent.click(submitButton);
 
     await waitFor(() => expect(mockSessionApiService.create).toHaveBeenCalled());
   });

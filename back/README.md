@@ -50,7 +50,13 @@ spring.datasource.url=jdbc:mysql://localhost:3306/yoga_db
 spring.datasource.username=root
 spring.datasource.password=yourpassword
 ```
+MySQL
+SQL script for creating the schema is available ressources/sql/script.sql
 
+By default the admin account is:
+
+login: yoga@studio.com
+password: test!1234
 ---
 
 ## 🧪 Exécution des tests
