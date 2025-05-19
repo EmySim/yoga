@@ -13,7 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import '@testing-library/jest-dom';
 
@@ -32,9 +32,11 @@ const mockSessionApiService = {
   all: jest.fn(() => of(mockSessions)),
   create: jest.fn(() => of(mockSessions[0])),
   update: jest.fn(() => of(mockSessions[0])),
-  delete: jest.fn(() => of({})),
+  delete: jest.fn(() => of(true)),
   detail: jest.fn(() => of(mockSessions[0])),
-  getTeachers: jest.fn(() => of([{ id: 101, name: 'Professeur Zen' }])),
+  getTeachers: jest.fn(() =>
+    of([{ id: 101, firstName: 'Professeur', lastName: 'Zen' }])
+  ),
 };
 
 const mockRouter = {
@@ -42,8 +44,8 @@ const mockRouter = {
   url: '/sessions/create',
 };
 
-const renderList = async () => {
-  return render(ListComponent, {
+const renderList = async () =>
+  render(ListComponent, {
     imports: [MatCardModule, MatIconModule, HttpClientModule],
     providers: [
       { provide: SessionApiService, useValue: mockSessionApiService },
@@ -53,7 +55,7 @@ const renderList = async () => {
         useValue: {
           sessionInformation: { admin: true, id: 1, token: '' },
           isLogged: true,
-          $isLogged: () => of(true),
+          $isLogged: of(true),
         },
       },
       {
@@ -64,7 +66,6 @@ const renderList = async () => {
       },
     ],
   });
-};
 
 const renderForm = async (isUpdate = false) => {
   mockRouter.url = isUpdate ? '/sessions/update/1' : '/sessions/create';
@@ -78,11 +79,19 @@ const renderForm = async (isUpdate = false) => {
       MatSelectModule,
       MatButtonModule,
       HttpClientModule,
+      ReactiveFormsModule,
     ],
     providers: [
       { provide: SessionApiService, useValue: mockSessionApiService },
       { provide: Router, useValue: mockRouter },
-      { provide: SessionService, useValue: { sessionInformation: { admin: true } } },
+      {
+        provide: SessionService,
+        useValue: {
+          sessionInformation: { admin: true },
+          isLogged: true,
+          $isLogged: of(true),
+        },
+      },
       {
         provide: ActivatedRoute,
         useValue: {
@@ -93,13 +102,13 @@ const renderForm = async (isUpdate = false) => {
           },
         },
       },
-      FormBuilder,
+      { provide: FormBuilder, useFactory: () => new FormBuilder() },
     ],
   });
 };
 
-const renderDetail = async () => {
-  return render(DetailComponent, {
+const renderDetail = async () =>
+  render(DetailComponent, {
     imports: [
       MatCardModule,
       MatIconModule,
@@ -108,6 +117,8 @@ const renderDetail = async () => {
       MatInputModule,
       MatButtonModule,
       HttpClientModule,
+      MatSelectModule,
+      ReactiveFormsModule,
     ],
     providers: [
       { provide: SessionApiService, useValue: mockSessionApiService },
@@ -117,7 +128,7 @@ const renderDetail = async () => {
         useValue: {
           sessionInformation: { admin: true, id: 1, token: '' },
           isLogged: true,
-          $isLogged: () => of(true),
+          $isLogged: of(true),
         },
       },
       {
@@ -126,39 +137,79 @@ const renderDetail = async () => {
           snapshot: { paramMap: { get: () => '1' } },
         },
       },
-      FormBuilder,
+      { provide: FormBuilder, useFactory: () => new FormBuilder() },
     ],
   });
-};
 
-describe('ADMIN Session Integration', () => {
+describe('ADMIN - Intégration SessionComponent (List, Form, Detail)', () => {
+  beforeAll(() => {
+    if (typeof window.fetch !== 'function') {
+      window.fetch = () => Promise.reject(new Error('fetch is disabled in tests')) as any;
+    }
+    jest.spyOn(window, 'fetch').mockImplementation(() =>
+      Promise.reject(new Error('fetch is disabled in tests'))
+    );
+
+    jest.spyOn(console, 'error').mockImplementation(() => { });
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('affiche les boutons admin', async () => {
     await renderList();
-    expect(screen.getByTestId('create-button')).toBeInTheDocument();
+
+    expect(await screen.findByTestId('create-button')).toBeInTheDocument();
     expect(await screen.findAllByTestId('edit-button')).toHaveLength(mockSessions.length);
   });
 
   it('peut créer une session', async () => {
     await renderForm(false);
-    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'New Session' } });
-    fireEvent.click(screen.getByText('Save'));
+
+    await fireEvent.change(await screen.findByTestId('name-input'), {
+      target: { value: 'New Session' },
+    });
+    await fireEvent.change(await screen.findByTestId('date-input'), {
+      target: { value: '2025-05-20' },
+    });
+    await fireEvent.change(await screen.findByTestId('description-input'), {
+      target: { value: 'Séance de test' },
+    });
+
+    const teacherSelect = await screen.findByTestId('teacher-select');
+    await fireEvent.mouseDown(teacherSelect);
+
+    const teacherOption = await screen.findByText('Professeur Zen');
+
+
+    await fireEvent.click(teacherOption);
+
+    const saveButton = await screen.findByTestId('submit-button');
+    await fireEvent.click(saveButton);
+
     await waitFor(() => expect(mockSessionApiService.create).toHaveBeenCalled());
   });
 
   it('peut mettre à jour une session', async () => {
     await renderForm(true);
-    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Updated Session' } });
-    fireEvent.click(screen.getByText('Save'));
+
+    await fireEvent.change(await screen.findByTestId('name-input'), {
+      target: { value: 'Updated Session' },
+    });
+
+    const saveButton = await screen.findByTestId('submit-button');
+    await fireEvent.click(saveButton);
+
     await waitFor(() => expect(mockSessionApiService.update).toHaveBeenCalled());
   });
 
   it('peut supprimer une session', async () => {
     await renderDetail();
-    fireEvent.click(screen.getByTestId('delete-button'));
+
+    const deleteBtn = await screen.findByTestId('delete-button');
+    await fireEvent.click(deleteBtn);
+
     await waitFor(() => expect(mockSessionApiService.delete).toHaveBeenCalled());
   });
 });
