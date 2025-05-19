@@ -67,10 +67,12 @@ export class DetailComponent implements OnInit {
       .detail(this.sessionId)
       .subscribe((session: Session) => {
         this.session = session;
+        console.log('Session:', session);
         this.isParticipate = session.users.some(u => u === this.sessionService.sessionInformation!.id);
         this.teacherService
           .detail(session.teacher_id.toString())
           .subscribe((teacher: Teacher) => this.teacher = teacher);
+          console.log('Teacher:', this.teacher);
       });
   }
 

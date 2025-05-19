@@ -1,3 +1,5 @@
+import { Session } from './intercepts';
+
 // === Utils ===
 export const getFutureDateISO = (daysAhead: number, extraHours: number = 0) =>
   new Date(Date.now() + (daysAhead * 24 + extraHours) * 60 * 60 * 1000)
@@ -34,6 +36,21 @@ export const regularUser = {
   updatedAt: new Date().toISOString(),
 };
 
+export const generateFakeUsers = (count: number) =>
+  Array.from({ length: count }, (_, i) => ({
+    id: i + 3, // évite les conflits avec adminUser (1) et regularUser (2)
+    username: `fakeUser${i + 1}`,
+    email: `fake${i + 1}@yoga.com`,
+    firstName: `Fake${i + 1}`,
+    lastName: `User`,
+    admin: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }));
+
+export const fakeUsers = generateFakeUsers(12);
+
+
 // === Enseignants ===
 export const teacherVictoria = {
   id: 1,
@@ -52,13 +69,19 @@ export const teacherAlice = {
 };
 
 // === Sessions ===
-export const createSession = (date: string) => ({
+export const createSession = (date: string): Session => ({
   id: 92,
   name: 'Yoga Session',
   description: 'A relaxing yoga session',
   date,
   teacher: { ...teacherVictoria },
   users: [],
+  attendees: [],
+  imageUrl: 'https://example.com/default-image.jpg', // Ajout d'une URL par défaut
+  startDate: date, // Ajout de startDate
+  endDate: getFutureDateISO(1, 2), // Ajout de endDate (+2 heures)
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 });
 
 export const updatedSession = {
@@ -74,17 +97,15 @@ export const updatedSession = {
 export const sessionDetails = {
   id: 92,
   name: 'Updated Yoga Session',
-  teacher: {
-    ...teacherAlice,
-    lastName: teacherAlice.lastName.toUpperCase(),
-  },
+  teacher_id: 2,
   imageUrl: 'https://example.com/image.jpg',
-  users: [{ id: 12 }],
-  attendees: [12],
+  users: fakeUsers, // Liste des objets utilisateurs
+  attendees: fakeUsers.map(user => user.id), // Liste des IDs
   startDate: updatedSession.startDate,
   endDate: updatedSession.endDate,
   date: updatedSession.startDate,
   description: 'An updated relaxing yoga session',
   createdAt: '2025-05-10T08:00:00.000Z',
-  updatedAt: '2025-05-15T10:00:00.000Z',
+  updatedAt: '2025-05-16T10:00:00.000Z',
 };
+
