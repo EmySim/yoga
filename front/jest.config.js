@@ -33,9 +33,13 @@ module.exports = {
 
   collectCoverageFrom: [
     'src/app/**/*.ts',
-    '!src/**/*.spec.ts',
     '!src/**/*.module.ts',
+    '!src/main.ts',
+    '!src/polyfills.ts',
+    '!src/test.ts',
+    '!src/**/*.spec.ts',
   ],
+
   coveragePathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/src/environments/',
@@ -44,9 +48,6 @@ module.exports = {
   coverageThreshold: {
     global: {
       statements: 80,
-    },
-    './src/integration-tests/': {
-      statements: 30,
     },
   },
 

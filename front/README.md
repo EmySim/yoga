@@ -67,7 +67,7 @@ Après avoir lancé un test avec `--coverage`, tu peux consulter le rapport ici 
 Lancer les tests E2E :
 
 ```bash
-npm run e2e
+npm run cypress:run
 ```
 
 Générer un rapport de couverture (après avoir lancé les tests E2E) :
