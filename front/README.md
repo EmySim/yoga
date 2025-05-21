@@ -24,12 +24,10 @@ npm run start
 
 ## 🧪 Tests
 
-## 🧪 Lancer les tests
-
 ### ✅ Lancer **uniquement les tests unitaires** :
 
 ```bash
-npm run test
+npm run test:unit
 ```
 
 ### 🔁 Lancer **uniquement les tests d’intégration** :
@@ -37,6 +35,24 @@ npm run test
 ```bash
 npm run test:integration
 ```
+
+### 🧩 Rapport de couverture combinée :
+
+```bash
+npm run test:coverage
+```
+
+Pour nettoyer les anciens rapports :
+```bash
+npm run clean:coverage
+```
+
+### 📂 Emplacements des rapports Jest
+
+| Type de test          | Rapport d’exécution               | Rapport de couverture                      |
+|-----------------------|------------------------------------|--------------------------------------------|
+| Tests unitaires       | `coverage/unit/test-report.html`  | `coverage/unit/lcov-report/index.html`     |
+| Tests d’intégration   | `coverage/integration/test-report.html` | `coverage/integration/lcov-report/index.html` |
 
 ---
 
@@ -49,36 +65,42 @@ npm run test:integration
 | `npx jest --verbose` | Affiche un rapport détaillé |
 | `npx jest --watch` | Surveille les fichiers et relance les tests à chaque modification |
 | `npx jest --coverage` | Génère un rapport de couverture |
-| `npm run test:coverage` | Génère un rapport global de couverture |
-| `npm run clean:coverage` | nettoye le dossier `coverage` |
-
----
-
-### 📊 Rapport de couverture
-
-Après avoir lancé un test avec `--coverage`, tu peux consulter le rapport ici :
-
-> `front/coverage/lcov-report/index.html`
 
 ---
 
 ### 🧭 Tests de bout en bout (Cypress)
 
-Lancer les tests E2E :
+#### Lancer les tests E2E
 
 ```bash
 npm run cypress:run
 ```
 
-Générer un rapport de couverture (après avoir lancé les tests E2E) :
+#### Procédure complète pour la couverture avec Cypress
 
+1. 🧹 Nettoyer les anciens fichiers de couverture :
+```bash
+npm run clean:coverage
+```
+
+2. 🚀 Lancer le serveur Angular instrumenté :
+```bash
+ng run yoga:serve-coverage
+```
+
+3. 🧪 Dans un autre terminal, lancer Cypress :
+```bash
+npm run cypress:run
+```
+
+4. 📂 Vérifier que le dossier `.nyc_output/` contient des fichiers.
+
+5. 🧾 Générer le rapport final de couverture :
 ```bash
 npm run e2e:coverage
 ```
 
-Le rapport de couverture se trouve ici :
-
-> `front/coverage/lcov-report/index.html`
+> Le rapport final est disponible ici : `front/coverage/lcov-report/index.html`
 
 ---
 
