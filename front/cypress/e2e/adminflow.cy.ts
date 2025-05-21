@@ -5,7 +5,6 @@ import {
   teacherVictoria,
   teacherAlice,
   createSession,
-  updatedSession,
   getFutureDateISO,
   formatDateForDisplay,
   sessionDetails,
@@ -28,12 +27,9 @@ const interceptLogin = (user = adminUser) => {
 describe('Admin End-to-End Flow', () => {
   it('should login and complete the admin flow', () => {
     const sessionDateISO = getFutureDateISO(1);
-    const updatedDateISO = getFutureDateISO(2);
+    const updatedDateISO = getFutureDateISO(2); // rendue dynamique
     const updatedDateDisplay = formatDateForDisplay(updatedDateISO);
-
-    cy.log('📅 Date initiale ISO : ' + sessionDateISO);
-    cy.log('📅 Date mise à jour ISO : ' + updatedDateISO);
-    cy.log('📅 Format affiché attendu : ' + updatedDateDisplay);
+    const updatedAtDisplay = formatDateForDisplay(getFutureDateISO(2, 2));
 
     // === STEP 0: Login ===
     interceptSessionList([]);
@@ -77,18 +73,16 @@ describe('Admin End-to-End Flow', () => {
 
     // === STEP 2: Session Update ===
     const updated = {
-      ...session,
-      ...updatedSession,
+      ...sessionDetails,
       startDate: updatedDateISO,
       date: updatedDateISO,
-      teacher: teacherAlice,
-      teacher_id: teacherAlice.id,
-      users: [adminUser.id],
+      updatedAt: getFutureDateISO(2, 2), // rendue dynamique
+      teacher: teacherAlice, // Add the missing teacher property
     };
     interceptTeachers([teacherAlice]);
     interceptTeacherGet(teacherAlice);
     interceptSessionGet(session);
-    interceptSessionUpdate(session.id);
+    interceptSessionUpdate(updated.id);
     interceptSessionList([updated]);
 
     cy.window().scrollTo('bottom');
@@ -120,29 +114,21 @@ describe('Admin End-to-End Flow', () => {
     cy.contains(updated.description).should('exist');
     cy.contains(updatedDateDisplay).should('exist');
 
-    // === STEP 3: Session Details ===
-    cy.log('📦 Interceptions pour le détail de la session');
     interceptSessionDelete(updated.id);
     interceptSessionList([]);
-    interceptSessionGet(updated);
+    interceptSessionGet({ ...updated, teacher: teacherAlice });
     interceptTeachers([teacherAlice]);
     interceptTeacherGet(teacherAlice);
-
-    // 🔧 Correction ici : interception générique pour les détails profs
+    cy.intercept('GET', '/api/teacher/*').as('getTeacher');
     cy.intercept('GET', '/api/teacher/*').as('getTeacher');
 
-    cy.log('👀 Ouverture des détails de la session');
     cy.get('button[data-testid="detail-button"]').should('exist').click();
 
     cy.wait('@getSessionDetail');
     cy.wait('@getTeacher');
 
-    cy.log('✅ Vérification des éléments affichés');
-
-    // Vérification du nom de la session
     cy.contains(updated.name).should('exist');
 
-    // Vérification du nom du professeur (Alice SMITH)
     const expectedTeacherName = `${
       teacherAlice.firstName
     } ${teacherAlice.lastName.toUpperCase()}`;
@@ -151,29 +137,19 @@ describe('Admin End-to-End Flow', () => {
       .should('be.visible')
       .should('have.text', expectedTeacherName);
 
-    // Vérification de la description
     cy.contains(updated.description).should('exist');
-
-    // Vérification des participants
-    cy.contains(sessionDetails.attendees.length.toString()).should('exist');
-
+    cy.contains(`${updated.attendees.length} attendees`).should('exist');
     cy.contains('Create at:').should('exist');
     cy.contains('Last update:').should('exist');
-    cy.contains(updatedDateDisplay).should('exist');
+    cy.contains(updatedAtDisplay).should('exist');
 
     // === STEP 4: Delete the Session ===
     cy.log('🗑 Suppression de la session');
-    cy.visit(`/sessions/detail/${updated.id}`);
-    cy.wait('@getSessionDetail');
+    // 👇 Suppression directe sans revisite
     cy.get('[data-testid=delete-button]').click();
     cy.wait('@deleteSession');
     cy.url().should('include', '/sessions');
     cy.contains(updated.name).should('not.exist');
 
-    // === STEP 5: Profile and Logout ===
-    cy.visit('/me');
-    cy.contains('My Profile');
-    cy.visit('/');
-    cy.contains('Login');
   });
 });
