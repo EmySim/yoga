@@ -3,17 +3,17 @@
   "version": "0.0.0",
   "scripts": {
     "start": "ng serve",
-    "test:unit": "jest --testPathIgnorePatterns=src/app/integration-tests/ --coverage",
-    "test:integration": "jest --testMatch \"**/src/app/integration-tests/**/*.spec.ts\" --coverage",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "clean:coverage": "rimraf coverage",
-    "lint": "ng lint",
-    "e2e": "ng e2e",
-    "e2e:ci": "ng run yoga:e2e-ci",
-    "e2e:coverage": "npx nyc report --reporter=lcov --reporter=text-summary",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+  "test:unit": "jest --testPathIgnorePatterns=src/app/integration\\.spec\\.ts --coverage",
+  "test:integration": "jest --testMatch \"**/src/app/integration.spec.ts/**/*.spec.ts\" --coverage",
+  "test:watch": "jest --watch",
+  "test:coverage": "jest --coverage",
+  "clean:coverage": "rimraf coverage",
+  "lint": "ng lint",
+  "e2e": "ng e2e",
+  "e2e:ci": "ng run yoga:e2e-ci",
+  "e2e:coverage": "npx nyc report --reporter=lcov --reporter=text-summary",
+  "cypress:open": "cypress open",
+  "cypress:run": "cypress run"
   },
   "private": true,
   "dependencies": {
