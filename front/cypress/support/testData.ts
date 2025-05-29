@@ -21,19 +21,21 @@ export const adminUser = {
   firstName: 'Admin',
   lastName: 'User',
   admin: true,
+  password: 'test!1234',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
 
 export const regularUser = {
   id: 2,
-  username: 'regularUser',
-  email: 'user@yoga.com',
-  firstName: 'Regular',
-  lastName: 'User',
+  username: 'CharlesMLindsay',
+  email: 'CharlesMLindsay@rhyta.com',
+  firstName: 'Charles',
+  lastName: 'Lindsay',
   admin: false,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  password: 'au5ic6Oumi',
+  createdAt: new Date(),
+  updatedAt: new Date(),
 };
 
 export const generateFakeUsers = (count: number) =>
@@ -101,11 +103,11 @@ export const sessionDetails = {
   imageUrl: 'https://example.com/image.jpg',
   users: fakeUsers, // Liste des objets utilisateurs
   attendees: fakeUsers.map(user => user.id), // Liste des IDs
-  startDate: updatedSession.startDate,
-  endDate: updatedSession.endDate,
-  date: updatedSession.startDate,
+  startDate: getFutureDateISO(7), // dans 7 jours
+  endDate: getFutureDateISO(7, 2), // +2h
+  date: getFutureDateISO(7), // dynamique au lieu d'une date statique
   description: 'An updated relaxing yoga session',
-  createdAt: '2025-05-10T08:00:00.000Z',
-  updatedAt: '2025-05-16T10:00:00.000Z',
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 };
 

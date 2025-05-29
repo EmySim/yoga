@@ -51,7 +51,7 @@ npm run clean:coverage
 
 | Type de test          | Rapport d’exécution               | Rapport de couverture                      |
 |-----------------------|------------------------------------|--------------------------------------------|
-| Tests unitaires       | `coverage/unit/test-report.html`  | `coverage/unit/lcov-report/index.html`     |
+| Tests unitaires       | `coverage/unit/test-report.html`  | `coverage/lcov-report/index.html`     |
 | Tests d’intégration   | `coverage/integration/test-report.html` | `coverage/integration/lcov-report/index.html` |
 
 ---
