@@ -1,7 +1,5 @@
 import {
   regularUser,
-  getFutureDateISO,
-  formatDateForDisplay,
 } from '../support/testData';
 import {
   interceptRegister,
@@ -9,25 +7,21 @@ import {
   interceptSessionList,
   interceptUserGet,
 } from '../support/intercepts';
-// <-- Les commandes custom (loginByUi) sont ajoutées dans support/commands
 import '../support/commands';
 
-/**
- * Suite E2E : cycle complet utilisateur
- * - Inscription
- * - Connexion
- * - Accès au profil (/me) sans rechargement
- * - Bouton retour
- * - Suppression de compte
- */
-describe('User End-to-End flow', () => {
-  /* ------------------------------------------------------------------ */
-  /* TEST 1 : register → login → /me                                    */
-  /* ------------------------------------------------------------------ */
-  it('inscription puis accès à "/me" sans reload', () => {
-    /* REGISTER */
+describe('User End‑to‑End – compte utilisateur', () => {
+  beforeEach(() => {
+    // Intercepts communs pour tous les tests connectés
+    interceptSessionList([]);
+    interceptLogin(regularUser);
+    cy.loginByUi(regularUser);
+  });
+  
+  /* ================================== */
+  /*  IT 1 : Inscription                */
+  /* ================================== */
+  it('enregistre un nouvel utilisateur', () => {
     interceptRegister(regularUser);
-
     cy.visit('/register');
     cy.get('[data-testid="input-first-name"]').type(regularUser.firstName);
     cy.get('[data-testid="input-last-name"]').type(regularUser.lastName);
@@ -37,50 +31,55 @@ describe('User End-to-End flow', () => {
 
     cy.wait('@registerRequest');
     cy.url().should('include', '/login');
+  });
 
-    /* LOGIN (via commande custom) */
-    cy.loginByUi(regularUser); // gère interceptSessionList + interceptLogin
+  /* ================================== */
+  /*  IT 2 : Connexion                  */
+  /* ================================== */
+  it('se connecte via le formulaire', () => {
+    cy.loginByUi(regularUser); // ← commande custom + intercepts internes
+  });
 
-    /* /ME (navigation SPA) */
-    interceptUserGet(regularUser); // single stub
-    cy.get('[data-testid="nav-profile"]').click();
+  /* ================================== */
+  /*  IT 3 : Consultation du profil     */
+  /* ================================== */
+  it('affiche la page /me et les infos utilisateur', () => {
+  
+    interceptUserGet(regularUser);
 
+    cy.get('[data-testid="nav-account"]').click();
     cy.wait('@getUser');
     cy.url().should('include', '/me');
 
-    // Vérifications UI
     cy.contains('User information');
     cy.contains(regularUser.firstName);
     cy.contains(regularUser.lastName.toUpperCase());
     cy.contains(regularUser.email);
   });
 
-  /* ------------------------------------------------------------------ */
-  /* TEST 2 : bouton retour                                             */
-  /* ------------------------------------------------------------------ */
-  it('revient en arrière grâce au bouton retour', () => {
-    cy.loginByUi(regularUser);
+  /* ================================== */
+  /*  IT 4 : Bouton retour              */
+  /* ================================== */
+  it('revient à la liste via la flèche retour', () => {
+    
     interceptUserGet(regularUser);
 
-    cy.get('[data-testid="nav-profile"]').click();
+    cy.get('[data-testid="nav-account"]').click();
     cy.wait('@getUser');
-
     cy.get('[data-testid="back-button"]').click();
     cy.url().should('not.include', '/me');
   });
 
-  /* ------------------------------------------------------------------ */
-  /* TEST 3 : suppression du compte                                     */
-  /* ------------------------------------------------------------------ */
-  it('supprime le compte et redirige vers /', () => {
-    cy.loginByUi(regularUser);
+  /* ================================== */
+  /*  IT 5 : Suppression du compte      */
+  /* ================================== */
+  it('supprime le compte utilisateur', () => {
+  
     interceptUserGet(regularUser);
-
     cy.intercept('DELETE', '**/api/user/**', { statusCode: 200 }).as('deleteUser');
 
-    cy.get('[data-testid="nav-profile"]').click();
+    cy.get('[data-testid="nav-account"]').click();
     cy.wait('@getUser');
-
     cy.get('[data-testid="delete-button"]').click();
 
     cy.wait('@deleteUser');
