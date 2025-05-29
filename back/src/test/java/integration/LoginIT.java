@@ -20,9 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles("test")
 @Tag("integration")
-@SpringBootTest(classes = SpringBootSecurityJwtApplication.class)
+@SpringBootTest(classes = {SpringBootSecurityJwtApplication.class})
 @AutoConfigureMockMvc
-@Import(TestSecurityConfig.class)
+@Import({TestSecurityConfig.class})
 public class LoginIT {
 
     @Autowired
